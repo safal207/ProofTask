@@ -107,15 +107,32 @@ OK trace: trace_<id> task=task_001 status=verified
 
 For a full walkthrough, see [`docs/demo.md`](docs/demo.md).
 
+## Local ledger
+
+ProofTask can also keep tasks in a small local file-based ledger:
+
+```bash
+prooftask init-ledger --ledger .prooftask
+prooftask ledger-add-task --ledger .prooftask --task examples/manual_qa_task.json
+prooftask list-tasks --ledger .prooftask
+prooftask inspect-task --ledger .prooftask --task-id task_001
+```
+
+For details, see [`docs/ledger.md`](docs/ledger.md).
+
 ## CLI commands
 
 ```text
-prooftask create-task      Create a structured task JSON file
-prooftask validate-task    Validate a task JSON file
-prooftask validate-proof   Validate a human proof JSON file
-prooftask submit-proof     Create a submitted trace from task + proof
-prooftask validate-trace   Validate a trace JSON file
-prooftask verify           Verify or reject a submitted trace
+prooftask create-task       Create a structured task JSON file
+prooftask validate-task     Validate a task JSON file
+prooftask validate-proof    Validate a human proof JSON file
+prooftask submit-proof      Create a submitted trace from task + proof
+prooftask validate-trace    Validate a trace JSON file
+prooftask verify            Verify or reject a submitted trace
+prooftask init-ledger       Initialize a local file-based ledger
+prooftask ledger-add-task   Add a task JSON file to a local ledger
+prooftask list-tasks        List tasks stored in a local ledger
+prooftask inspect-task      Inspect one task stored in a local ledger
 ```
 
 ## Schemas
@@ -195,7 +212,7 @@ prooftask.py  Dependency-free MVP CLI
 tests/        CLI regression tests
 schemas/      JSON schemas for tasks, proof, and trace records
 examples/     Example agent-created tasks, proof submissions, and invalid fixtures
-docs/         MVP notes, positioning, demo walkthrough, and roadmap
+docs/         MVP notes, positioning, demo walkthrough, ledger guide, and roadmap
 .github/      CI smoke test for the full verification flow
 ```
 
