@@ -51,12 +51,16 @@ python prooftask.py submit-proof \
   --proof examples/manual_qa_proof.json \
   --out examples/submitted_trace.json
 
+python prooftask.py validate-trace examples/submitted_trace.json
+
 python prooftask.py verify \
   --trace examples/submitted_trace.json \
   --decision verified \
   --verifier verifier_demo_001 \
   --reason "All acceptance criteria passed." \
   --out examples/verified_trace.json
+
+python prooftask.py validate-trace examples/verified_trace.json
 ```
 
 Expected result:
@@ -65,8 +69,12 @@ Expected result:
 OK task: task_001 status=created
 OK proof: proof_001 task=task_001 result=pass
 OK submitted: trace_<id> -> examples/submitted_trace.json
+OK trace: trace_<id> task=task_001 status=submitted
 OK verified: trace_<id> -> examples/verified_trace.json
+OK trace: trace_<id> task=task_001 status=verified
 ```
+
+For a full walkthrough, see [`docs/demo.md`](docs/demo.md).
 
 ## Schemas
 
@@ -139,8 +147,8 @@ The first version focuses on one narrow use case:
 ```text
 prooftask.py  Dependency-free MVP CLI
 schemas/      JSON schemas for tasks, proof, and trace records
-examples/     Example agent-created tasks and human proof submissions
-docs/         MVP notes and product direction
+examples/     Example agent-created tasks, proof submissions, and invalid fixtures
+docs/         MVP notes, positioning, and demo walkthrough
 .github/      CI smoke test for the full verification flow
 ```
 
