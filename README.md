@@ -59,6 +59,20 @@ pytest -q
 Run the local MVP CLI with the built-in examples:
 
 ```bash
+prooftask create-task \
+  --task-id task_generated_001 \
+  --type manual_qa_check \
+  --created-by agent_demo_001 \
+  --objective "Verify signup flow on mobile Chrome" \
+  --acceptance "Open signup page" \
+  --acceptance "Submit valid test data" \
+  --proof "screenshot" \
+  --proof "short written report" \
+  --payment-amount 5 \
+  --trace-reason "AI coding agent changed signup flow before release." \
+  --trace-source demo \
+  --out examples/generated_task.json
+
 prooftask validate-task examples/manual_qa_task.json
 prooftask validate-proof examples/manual_qa_proof.json
 
@@ -82,6 +96,7 @@ prooftask validate-trace examples/verified_trace.json
 Expected result:
 
 ```text
+OK created task: task_generated_001 -> examples/generated_task.json
 OK task: task_001 status=created
 OK proof: proof_001 task=task_001 result=pass
 OK submitted: trace_<id> -> examples/submitted_trace.json
@@ -91,6 +106,17 @@ OK trace: trace_<id> task=task_001 status=verified
 ```
 
 For a full walkthrough, see [`docs/demo.md`](docs/demo.md).
+
+## CLI commands
+
+```text
+prooftask create-task      Create a structured task JSON file
+prooftask validate-task    Validate a task JSON file
+prooftask validate-proof   Validate a human proof JSON file
+prooftask submit-proof     Create a submitted trace from task + proof
+prooftask validate-trace   Validate a trace JSON file
+prooftask verify           Verify or reject a submitted trace
+```
 
 ## Schemas
 
