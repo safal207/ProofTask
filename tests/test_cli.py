@@ -148,6 +148,55 @@ def test_create_task_rejects_negative_payment(tmp_path: Path) -> None:
     assert not out.exists()
 
 
+def test_local_ledger_flow(tmp_path: Path) -> None:
+    ledger = tmp_path / ".prooftask"
+
+    init_result = run_cli("init-ledger", "--ledger", str(ledger))
+    assert init_result.returncode == 0, init_result.stderr
+    assert (ledger / "ledger.json").exists()
+    assert (ledger / "tasks").is_dir()
+    assert (ledger / "proofs").is_dir()
+    assert (ledger / "traces").is_dir()
+    assert (ledger / "events.jsonl").exists()
+
+    add_result = run_cli("ledger-add-task", "--ledger", str(ledger), "--task", str(TASK))
+    assert add_result.returncode == 0, add_result.stderr
+    assert (ledger / "tasks" / "task_001.json").exists()
+
+    list_result = run_cli("list-tasks", "--ledger", str(ledger))
+    assert list_result.returncode == 0, list_result.stderr
+    assert "task_001" in list_result.stdout
+    assert "manual_qa_check" in list_result.stdout
+
+    list_json_result = run_cli("list-tasks", "--ledger", str(ledger), "--json")
+    assert list_json_result.returncode == 0, list_json_result.stderr
+    tasks = json.loads(list_json_result.stdout)
+    assert len(tasks) == 1
+    assert tasks[0]["task_id"] == "task_001"
+
+    inspect_result = run_cli("inspect-task", "--ledger", str(ledger), "--task-id", "task_001")
+    assert inspect_result.returncode == 0, inspect_result.stderr
+    inspected = json.loads(inspect_result.stdout)
+    assert inspected["task_id"] == "task_001"
+
+    duplicate_result = run_cli("ledger-add-task", "--ledger", str(ledger), "--task", str(TASK))
+    assert duplicate_result.returncode == 2
+    assert "Task already exists in ledger" in duplicate_result.stderr
+
+    events = (ledger / "events.jsonl").read_text(encoding="utf-8").strip().splitlines()
+    assert len(events) >= 2
+    assert any("ledger_initialized" in line for line in events)
+    assert any("task_added" in line for line in events)
+
+
+def test_ledger_requires_initialization(tmp_path: Path) -> None:
+    ledger = tmp_path / ".prooftask"
+    result = run_cli("list-tasks", "--ledger", str(ledger))
+
+    assert result.returncode == 2
+    assert "Ledger not initialized" in result.stderr
+
+
 def test_validate_examples() -> None:
     task_result = run_cli("validate-task", str(TASK))
     assert task_result.returncode == 0, task_result.stderr
