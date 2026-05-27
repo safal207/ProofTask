@@ -19,29 +19,37 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Validate examples
+      - name: Install package and test tools
         run: |
-          python prooftask.py validate-task examples/manual_qa_task.json
-          python prooftask.py validate-proof examples/manual_qa_proof.json
+          python -m pip install --upgrade pip
+          python -m pip install -e . pytest
 
-      - name: Run proof trace flow
+      - name: Run unit tests
+        run: pytest -q
+
+      - name: Validate examples through installed CLI
+        run: |
+          prooftask validate-task examples/manual_qa_task.json
+          prooftask validate-proof examples/manual_qa_proof.json
+
+      - name: Run proof trace flow through installed CLI
         run: |
           mkdir -p .tmp
-          python prooftask.py submit-proof \
+          prooftask submit-proof \
             --task examples/manual_qa_task.json \
             --proof examples/manual_qa_proof.json \
             --out .tmp/submitted_trace.json
 
-          python prooftask.py validate-trace .tmp/submitted_trace.json
+          prooftask validate-trace .tmp/submitted_trace.json
 
-          python prooftask.py verify \
+          prooftask verify \
             --trace .tmp/submitted_trace.json \
             --decision verified \
             --verifier ci_verifier \
             --reason "CI smoke test passed." \
             --out .tmp/verified_trace.json
 
-          python prooftask.py validate-trace .tmp/verified_trace.json
+          prooftask validate-trace .tmp/verified_trace.json
 
       - name: Inspect final trace
         run: |
@@ -62,7 +70,7 @@ jobs:
         run: |
           set +e
 
-          python prooftask.py submit-proof \
+          prooftask submit-proof \
             --task examples/manual_qa_task.json \
             --proof examples/invalid_mismatched_proof.json \
             --out .tmp/should_not_exist.json
@@ -72,7 +80,7 @@ jobs:
             exit 1
           fi
 
-          python prooftask.py validate-trace examples/invalid_final_trace.json
+          prooftask validate-trace examples/invalid_final_trace.json
           invalid_trace_status=$?
           if [ "$invalid_trace_status" -eq 0 ]; then
             echo "Expected invalid final trace fixture to fail"
