@@ -5,6 +5,7 @@ A tiny, dependency-free CLI for the first ProofTask MVP:
 
 - validate a task JSON file
 - validate a human proof JSON file
+- validate a verification trace JSON file
 - create a submitted trace from task + proof
 - verify or reject the submitted trace
 
@@ -25,6 +26,7 @@ from typing import Any
 
 TASK_STATUSES = {"created", "accepted", "submitted", "verified", "rejected", "cancelled"}
 SUBMIT_ALLOWED_STATUSES = {"created", "accepted"}
+TRACE_STATUSES = {"submitted", "verified", "rejected"}
 FINAL_STATUSES = {"verified", "rejected"}
 PROOF_RESULTS = {"pass", "fail", "blocked", "inconclusive"}
 PAYMENT_STATUSES = {"none", "pending", "escrowed", "released", "refunded"}
@@ -223,11 +225,20 @@ def create_submitted_trace(task: dict[str, Any], proof: dict[str, Any]) -> dict[
     }
 
 
-def validate_submitted_trace(trace: dict[str, Any]) -> dict[str, Any]:
-    require_fields(trace, ["trace_id", "task_id", "status", "task", "proof", "events"], "trace")
+def validate_trace(trace: dict[str, Any]) -> dict[str, Any]:
+    require_fields(
+        trace,
+        ["trace_id", "task_id", "status", "created_at", "updated_at", "task", "proof", "events"],
+        "trace",
+    )
 
-    if trace["status"] != "submitted":
-        raise ProofTaskError("Only traces with status 'submitted' can be verified")
+    for field in ["trace_id", "task_id", "status", "created_at", "updated_at"]:
+        require_non_empty_string(trace, field, "trace")
+
+    if trace["status"] not in TRACE_STATUSES:
+        raise ProofTaskError(
+            f"trace.status must be one of: {', '.join(sorted(TRACE_STATUSES))}"
+        )
 
     if not isinstance(trace["task"], dict):
         raise ProofTaskError("trace.task must be an object")
@@ -235,15 +246,56 @@ def validate_submitted_trace(trace: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(trace["proof"], dict):
         raise ProofTaskError("trace.proof must be an object")
 
-    validate_task(trace["task"])
-    validate_proof(trace["proof"])
-    ensure_task_proof_match(trace["task"], trace["proof"])
+    task = validate_task(trace["task"])
+    proof = validate_proof(trace["proof"])
+    ensure_task_proof_match(task, proof)
+
+    if trace["task_id"] != task["task_id"]:
+        raise ProofTaskError(
+            f"Trace/task mismatch: trace.task_id {trace['task_id']!r} != {task['task_id']!r}"
+        )
+
+    if trace["status"] != task["status"]:
+        raise ProofTaskError(
+            f"Trace/task status mismatch: trace.status {trace['status']!r} != task.status {task['status']!r}"
+        )
+
+    events = trace["events"]
+    if not isinstance(events, list) or not events:
+        raise ProofTaskError("trace.events must be a non-empty list")
+
+    for index, event in enumerate(events):
+        if not isinstance(event, dict):
+            raise ProofTaskError(f"trace.events[{index}] must be an object")
+        require_fields(event, ["event_type", "status", "at", "actor"], f"trace.events[{index}]")
+        for field in ["event_type", "status", "at", "actor"]:
+            require_non_empty_string(event, field, f"trace.events[{index}]")
+
+    if trace["status"] in FINAL_STATUSES:
+        verification = trace.get("verification")
+        if not isinstance(verification, dict):
+            raise ProofTaskError("Final traces must include trace.verification")
+        require_fields(verification, ["decision", "verifier", "verified_at"], "trace.verification")
+        for field in ["decision", "verifier", "verified_at"]:
+            require_non_empty_string(verification, field, "trace.verification")
+        if verification["decision"] != trace["status"]:
+            raise ProofTaskError(
+                f"Verification decision mismatch: {verification['decision']!r} != trace.status {trace['status']!r}"
+            )
+    elif "verification" in trace:
+        raise ProofTaskError("Submitted traces must not include trace.verification yet")
+
+    return trace
+
+
+def validate_submitted_trace(trace: dict[str, Any]) -> dict[str, Any]:
+    trace = validate_trace(trace)
+
+    if trace["status"] != "submitted":
+        raise ProofTaskError("Only traces with status 'submitted' can be verified")
 
     if trace["task"]["status"] != "submitted":
         raise ProofTaskError("trace.task.status must be 'submitted' before verification")
-
-    if not isinstance(trace["events"], list):
-        raise ProofTaskError("trace.events must be a list")
 
     return trace
 
@@ -297,6 +349,12 @@ def cmd_validate_proof(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_validate_trace(args: argparse.Namespace) -> int:
+    trace = validate_trace(read_json(args.path))
+    print(f"OK trace: {trace['trace_id']} task={trace['task_id']} status={trace['status']}")
+    return 0
+
+
 def cmd_submit_proof(args: argparse.Namespace) -> int:
     task = validate_task(read_json(args.task))
     proof = validate_proof(read_json(args.proof))
@@ -328,6 +386,10 @@ def build_parser() -> argparse.ArgumentParser:
     validate_proof_parser = subcommands.add_parser("validate-proof", help="Validate a proof JSON file")
     validate_proof_parser.add_argument("path", help="Path to proof JSON")
     validate_proof_parser.set_defaults(func=cmd_validate_proof)
+
+    validate_trace_parser = subcommands.add_parser("validate-trace", help="Validate a trace JSON file")
+    validate_trace_parser.add_argument("path", help="Path to trace JSON")
+    validate_trace_parser.set_defaults(func=cmd_validate_trace)
 
     submit_parser = subcommands.add_parser(
         "submit-proof",
