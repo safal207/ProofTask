@@ -32,12 +32,16 @@ jobs:
             --proof examples/manual_qa_proof.json \
             --out .tmp/submitted_trace.json
 
+          python prooftask.py validate-trace .tmp/submitted_trace.json
+
           python prooftask.py verify \
             --trace .tmp/submitted_trace.json \
             --decision verified \
             --verifier ci_verifier \
             --reason "CI smoke test passed." \
             --out .tmp/verified_trace.json
+
+          python prooftask.py validate-trace .tmp/verified_trace.json
 
       - name: Inspect final trace
         run: |
@@ -53,3 +57,26 @@ jobs:
           assert len(trace['events']) >= 3
           print('OK final trace:', trace['trace_id'])
           PY
+
+      - name: Validate negative fixtures
+        run: |
+          set +e
+
+          python prooftask.py submit-proof \
+            --task examples/manual_qa_task.json \
+            --proof examples/invalid_mismatched_proof.json \
+            --out .tmp/should_not_exist.json
+          mismatch_status=$?
+          if [ "$mismatch_status" -eq 0 ]; then
+            echo "Expected mismatched proof fixture to fail"
+            exit 1
+          fi
+
+          python prooftask.py validate-trace examples/invalid_final_trace.json
+          invalid_trace_status=$?
+          if [ "$invalid_trace_status" -eq 0 ]; then
+            echo "Expected invalid final trace fixture to fail"
+            exit 1
+          fi
+
+          echo "OK negative fixtures failed as expected"
