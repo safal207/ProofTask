@@ -1,0 +1,46 @@
+{
+  "trace_id": "trace_invalid_001",
+  "task_id": "task_001",
+  "status": "verified",
+  "created_at": "2026-05-27T18:00:00Z",
+  "updated_at": "2026-05-27T18:01:00Z",
+  "task": {
+    "task_id": "task_001",
+    "created_by": "agent_demo_001",
+    "task_type": "manual_qa_check",
+    "objective": "Verify that the signup form works on mobile Chrome.",
+    "acceptance_criteria": [
+      "Open the signup page on mobile Chrome",
+      "Enter valid test data",
+      "Submit the form",
+      "Confirm that the success screen is shown"
+    ],
+    "proof_required": [
+      "screenshot",
+      "short written report",
+      "pass_or_fail result"
+    ],
+    "payment": {
+      "amount": 5,
+      "currency": "USD",
+      "status": "pending"
+    },
+    "status": "verified"
+  },
+  "proof": {
+    "proof_id": "proof_001",
+    "task_id": "task_001",
+    "submitted_by": "human_tester_demo_001",
+    "result": "pass",
+    "report": "Signup form was tested on mobile Chrome. Valid test data was submitted successfully and the success screen appeared.",
+    "submitted_at": "2026-05-27T18:00:00Z"
+  },
+  "events": [
+    {
+      "event_type": "task_loaded",
+      "status": "created",
+      "at": "2026-05-27T18:00:00Z",
+      "actor": "agent_demo_001"
+    }
+  ]
+}
