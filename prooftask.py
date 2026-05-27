@@ -3,6 +3,7 @@
 
 A tiny, dependency-free CLI for the first ProofTask MVP:
 
+- create a task JSON file
 - validate a task JSON file
 - validate a human proof JSON file
 - validate a verification trace JSON file
@@ -39,6 +40,10 @@ class ProofTaskError(ValueError):
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
+
+
+def generate_task_id() -> str:
+    return f"task_{uuid.uuid4().hex[:12]}"
 
 
 def read_json(path: str | Path) -> dict[str, Any]:
@@ -85,6 +90,50 @@ def require_string_list(data: dict[str, Any], field: str, kind: str) -> None:
         raise ProofTaskError(f"{kind}.{field} must contain only non-empty strings")
 
 
+def create_task(
+    *,
+    task_type: str,
+    created_by: str,
+    objective: str,
+    acceptance_criteria: list[str],
+    proof_required: list[str],
+    task_id: str | None = None,
+    payment_amount: float | None = None,
+    payment_currency: str = "USD",
+    payment_status: str = "pending",
+    trace_reason: str | None = None,
+    trace_source: str | None = None,
+) -> dict[str, Any]:
+    """Create a new task object and validate it before returning it."""
+
+    task: dict[str, Any] = {
+        "task_id": task_id or generate_task_id(),
+        "created_by": created_by,
+        "task_type": task_type,
+        "objective": objective,
+        "acceptance_criteria": acceptance_criteria,
+        "proof_required": proof_required,
+        "status": "created",
+    }
+
+    if payment_amount is not None:
+        task["payment"] = {
+            "amount": payment_amount,
+            "currency": payment_currency,
+            "status": payment_status,
+        }
+
+    trace: dict[str, str] = {}
+    if trace_reason:
+        trace["reason"] = trace_reason
+    if trace_source:
+        trace["source"] = trace_source
+    if trace:
+        task["trace"] = trace
+
+    return validate_task(task)
+
+
 def validate_task(task: dict[str, Any]) -> dict[str, Any]:
     require_fields(
         task,
@@ -124,6 +173,9 @@ def validate_task(task: dict[str, Any]) -> dict[str, Any]:
 
         if "currency" in payment and not isinstance(payment["currency"], str):
             raise ProofTaskError("task.payment.currency must be a string")
+
+        if "currency" in payment and not payment["currency"].strip():
+            raise ProofTaskError("task.payment.currency must be a non-empty string")
 
         if "status" in payment and payment["status"] not in PAYMENT_STATUSES:
             raise ProofTaskError(
@@ -337,6 +389,25 @@ def verify_trace(
     return verified_trace
 
 
+def cmd_create_task(args: argparse.Namespace) -> int:
+    task = create_task(
+        task_type=args.task_type,
+        created_by=args.created_by,
+        objective=args.objective,
+        acceptance_criteria=args.acceptance,
+        proof_required=args.proof,
+        task_id=args.task_id,
+        payment_amount=args.payment_amount,
+        payment_currency=args.payment_currency,
+        payment_status=args.payment_status,
+        trace_reason=args.trace_reason,
+        trace_source=args.trace_source,
+    )
+    write_json(args.out, task)
+    print(f"OK created task: {task['task_id']} -> {args.out}")
+    return 0
+
+
 def cmd_validate_task(args: argparse.Namespace) -> int:
     task = validate_task(read_json(args.path))
     print(f"OK task: {task['task_id']} status={task['status']}")
@@ -378,6 +449,36 @@ def build_parser() -> argparse.ArgumentParser:
         description="ProofTask MVP CLI for task/proof validation and verification traces.",
     )
     subcommands = parser.add_subparsers(dest="command", required=True)
+
+    create_task_parser = subcommands.add_parser("create-task", help="Create a task JSON file")
+    create_task_parser.add_argument("--type", dest="task_type", required=True, help="Task type, for example manual_qa_check")
+    create_task_parser.add_argument("--created-by", required=True, help="Requester identifier")
+    create_task_parser.add_argument("--objective", required=True, help="Human-readable task objective")
+    create_task_parser.add_argument(
+        "--acceptance",
+        action="append",
+        required=True,
+        help="Acceptance criterion. Can be passed multiple times.",
+    )
+    create_task_parser.add_argument(
+        "--proof",
+        action="append",
+        required=True,
+        help="Required proof item. Can be passed multiple times.",
+    )
+    create_task_parser.add_argument("--task-id", help="Optional explicit task ID")
+    create_task_parser.add_argument("--payment-amount", type=float, help="Optional payment amount")
+    create_task_parser.add_argument("--payment-currency", default="USD", help="Payment currency when payment amount is set")
+    create_task_parser.add_argument(
+        "--payment-status",
+        default="pending",
+        choices=sorted(PAYMENT_STATUSES),
+        help="Payment status when payment amount is set",
+    )
+    create_task_parser.add_argument("--trace-reason", help="Optional causal reason for task creation")
+    create_task_parser.add_argument("--trace-source", help="Optional source metadata for task creation")
+    create_task_parser.add_argument("--out", required=True, help="Output path for task JSON")
+    create_task_parser.set_defaults(func=cmd_create_task)
 
     validate_task_parser = subcommands.add_parser("validate-task", help="Validate a task JSON file")
     validate_task_parser.add_argument("path", help="Path to task JSON")
