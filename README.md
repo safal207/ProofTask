@@ -68,6 +68,14 @@ OK submitted: trace_<id> -> examples/submitted_trace.json
 OK verified: trace_<id> -> examples/verified_trace.json
 ```
 
+## Schemas
+
+ProofTask currently defines three MVP artifacts:
+
+- `schemas/task.schema.json` — structured task request
+- `schemas/proof.schema.json` — human proof submission
+- `schemas/trace.schema.json` — verification trace containing task, proof, decision, and events
+
 ## Example task
 
 ```json
@@ -133,6 +141,7 @@ prooftask.py  Dependency-free MVP CLI
 schemas/      JSON schemas for tasks, proof, and trace records
 examples/     Example agent-created tasks and human proof submissions
 docs/         MVP notes and product direction
+.github/      CI smoke test for the full verification flow
 ```
 
 ## Project status
