@@ -1,0 +1,20 @@
+{
+  "proof_id": "proof_invalid_001",
+  "task_id": "different_task_id",
+  "submitted_by": "human_tester_demo_001",
+  "result": "pass",
+  "report": "This proof intentionally references the wrong task_id. It should fail validation when submitted with examples/manual_qa_task.json.",
+  "evidence": [
+    {
+      "type": "screenshot",
+      "uri": "proof://demo/invalid-mismatch.png",
+      "description": "Invalid proof fixture."
+    }
+  ],
+  "environment": {
+    "device": "Android phone",
+    "os": "Android 15",
+    "browser": "Chrome Mobile"
+  },
+  "submitted_at": "2026-05-27T18:00:00Z"
+}
