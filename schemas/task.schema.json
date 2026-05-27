@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prooftask.dev/schemas/task.schema.json",
+  "title": "ProofTask Task",
+  "type": "object",
+  "required": [
+    "task_id",
+    "created_by",
+    "task_type",
+    "objective",
+    "acceptance_criteria",
+    "proof_required",
+    "status"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "description": "Stable task identifier."
+    },
+    "created_by": {
+      "type": "string",
+      "description": "Requester identifier, such as an AI agent, human user, or service."
+    },
+    "task_type": {
+      "type": "string",
+      "description": "Task category, for example manual_qa_check or screenshot_verification."
+    },
+    "objective": {
+      "type": "string",
+      "description": "Human-readable task objective."
+    },
+    "acceptance_criteria": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "proof_required": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "payment": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "number",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["none", "pending", "escrowed", "released", "refunded"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "status": {
+      "type": "string",
+      "enum": ["created", "accepted", "submitted", "verified", "rejected", "cancelled"]
+    },
+    "trace": {
+      "type": "object",
+      "description": "Optional causal and execution metadata for auditability."
+    }
+  },
+  "additionalProperties": false
+}
