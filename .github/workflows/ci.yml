@@ -27,6 +27,25 @@ jobs:
       - name: Run unit tests
         run: pytest -q
 
+      - name: Create task through installed CLI
+        run: |
+          mkdir -p .tmp
+          prooftask create-task \
+            --task-id task_ci_generated_001 \
+            --type manual_qa_check \
+            --created-by agent_ci_001 \
+            --objective "Verify generated task flow in CI" \
+            --acceptance "Open signup page" \
+            --acceptance "Submit valid test data" \
+            --proof "screenshot" \
+            --proof "short written report" \
+            --payment-amount 5 \
+            --trace-reason "CI generated an agent-facing QA task." \
+            --trace-source ci \
+            --out .tmp/generated_task.json
+
+          prooftask validate-task .tmp/generated_task.json
+
       - name: Validate examples through installed CLI
         run: |
           prooftask validate-task examples/manual_qa_task.json
@@ -34,7 +53,6 @@ jobs:
 
       - name: Run proof trace flow through installed CLI
         run: |
-          mkdir -p .tmp
           prooftask submit-proof \
             --task examples/manual_qa_task.json \
             --proof examples/manual_qa_proof.json \
@@ -84,6 +102,20 @@ jobs:
           invalid_trace_status=$?
           if [ "$invalid_trace_status" -eq 0 ]; then
             echo "Expected invalid final trace fixture to fail"
+            exit 1
+          fi
+
+          prooftask create-task \
+            --type manual_qa_check \
+            --created-by agent_ci_001 \
+            --objective "Invalid payment task" \
+            --acceptance "Do something" \
+            --proof "screenshot" \
+            --payment-amount -1 \
+            --out .tmp/invalid_task.json
+          invalid_payment_status=$?
+          if [ "$invalid_payment_status" -eq 0 ]; then
+            echo "Expected negative payment task creation to fail"
             exit 1
           fi
 
