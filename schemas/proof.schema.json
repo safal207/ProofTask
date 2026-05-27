@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://prooftask.dev/schemas/proof.schema.json",
+  "title": "ProofTask Proof Submission",
+  "type": "object",
+  "required": [
+    "proof_id",
+    "task_id",
+    "submitted_by",
+    "result",
+    "report",
+    "submitted_at"
+  ],
+  "properties": {
+    "proof_id": {
+      "type": "string"
+    },
+    "task_id": {
+      "type": "string"
+    },
+    "submitted_by": {
+      "type": "string"
+    },
+    "result": {
+      "type": "string",
+      "enum": ["pass", "fail", "blocked", "inconclusive"]
+    },
+    "report": {
+      "type": "string"
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "uri"],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["screenshot", "video", "log", "text", "link", "other"]
+          },
+          "uri": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "environment": {
+      "type": "object",
+      "properties": {
+        "device": {
+          "type": "string"
+        },
+        "os": {
+          "type": "string"
+        },
+        "browser": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "additionalProperties": false
+}
