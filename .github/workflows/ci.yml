@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate examples
+        run: |
+          python prooftask.py validate-task examples/manual_qa_task.json
+          python prooftask.py validate-proof examples/manual_qa_proof.json
+
+      - name: Run proof trace flow
+        run: |
+          mkdir -p .tmp
+          python prooftask.py submit-proof \
+            --task examples/manual_qa_task.json \
+            --proof examples/manual_qa_proof.json \
+            --out .tmp/submitted_trace.json
+
+          python prooftask.py verify \
+            --trace .tmp/submitted_trace.json \
+            --decision verified \
+            --verifier ci_verifier \
+            --reason "CI smoke test passed." \
+            --out .tmp/verified_trace.json
+
+      - name: Inspect final trace
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          trace = json.loads(Path('.tmp/verified_trace.json').read_text())
+          assert trace['status'] == 'verified'
+          assert trace['task']['status'] == 'verified'
+          assert trace['proof']['result'] == 'pass'
+          assert trace['verification']['decision'] == 'verified'
+          assert len(trace['events']) >= 3
+          print('OK final trace:', trace['trace_id'])
+          PY
