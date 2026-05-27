@@ -38,6 +38,36 @@ Trace is saved
 Payment can be released
 ```
 
+## Quickstart
+
+Run the local MVP CLI with the built-in examples:
+
+```bash
+python prooftask.py validate-task examples/manual_qa_task.json
+python prooftask.py validate-proof examples/manual_qa_proof.json
+
+python prooftask.py submit-proof \
+  --task examples/manual_qa_task.json \
+  --proof examples/manual_qa_proof.json \
+  --out examples/submitted_trace.json
+
+python prooftask.py verify \
+  --trace examples/submitted_trace.json \
+  --decision verified \
+  --verifier verifier_demo_001 \
+  --reason "All acceptance criteria passed." \
+  --out examples/verified_trace.json
+```
+
+Expected result:
+
+```text
+OK task: task_001 status=created
+OK proof: proof_001 task=task_001 result=pass
+OK submitted: trace_<id> -> examples/submitted_trace.json
+OK verified: trace_<id> -> examples/verified_trace.json
+```
+
 ## Example task
 
 ```json
@@ -99,6 +129,7 @@ The first version focuses on one narrow use case:
 ## Repository structure
 
 ```text
+prooftask.py  Dependency-free MVP CLI
 schemas/      JSON schemas for tasks, proof, and trace records
 examples/     Example agent-created tasks and human proof submissions
 docs/         MVP notes and product direction
