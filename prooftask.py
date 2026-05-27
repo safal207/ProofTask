@@ -9,6 +9,7 @@ A tiny, dependency-free CLI for the first ProofTask MVP:
 - validate a verification trace JSON file
 - create a submitted trace from task + proof
 - verify or reject the submitted trace
+- keep a small local task ledger
 
 This is intentionally small. It is a seed mechanism, not a full marketplace.
 """
@@ -32,6 +33,8 @@ FINAL_STATUSES = {"verified", "rejected"}
 PROOF_RESULTS = {"pass", "fail", "blocked", "inconclusive"}
 PAYMENT_STATUSES = {"none", "pending", "escrowed", "released", "refunded"}
 EVIDENCE_TYPES = {"screenshot", "video", "log", "text", "link", "other"}
+LEDGER_VERSION = "0.1"
+LEDGER_DIRS = ("tasks", "proofs", "traces")
 
 
 class ProofTaskError(ValueError):
@@ -389,6 +392,150 @@ def verify_trace(
     return verified_trace
 
 
+def ledger_metadata_path(ledger: str | Path) -> Path:
+    return Path(ledger) / "ledger.json"
+
+
+def ledger_events_path(ledger: str | Path) -> Path:
+    return Path(ledger) / "events.jsonl"
+
+
+def ledger_task_path(ledger: str | Path, task_id: str) -> Path:
+    return Path(ledger) / "tasks" / f"{task_id}.json"
+
+
+def ledger_dir_path(ledger: str | Path, name: str) -> Path:
+    return Path(ledger) / name
+
+
+def append_ledger_event(ledger: str | Path, event: dict[str, Any]) -> None:
+    ledger_path = Path(ledger)
+    event_record = {
+        "event_id": f"event_{uuid.uuid4().hex[:12]}",
+        "at": utc_now(),
+        **event,
+    }
+    events_path = ledger_events_path(ledger_path)
+    events_path.parent.mkdir(parents=True, exist_ok=True)
+    with events_path.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(event_record, ensure_ascii=False) + "\n")
+
+
+def init_ledger(ledger: str | Path, force: bool = False) -> dict[str, Any]:
+    ledger_path = Path(ledger)
+    ledger_path.mkdir(parents=True, exist_ok=True)
+    for name in LEDGER_DIRS:
+        ledger_dir_path(ledger_path, name).mkdir(parents=True, exist_ok=True)
+
+    metadata_path = ledger_metadata_path(ledger_path)
+    if metadata_path.exists() and not force:
+        metadata = read_json(metadata_path)
+        validate_ledger_metadata(metadata)
+        return metadata
+
+    metadata = {
+        "ledger_version": LEDGER_VERSION,
+        "created_at": utc_now(),
+        "updated_at": utc_now(),
+        "directories": list(LEDGER_DIRS),
+    }
+    write_json(metadata_path, metadata)
+    append_ledger_event(
+        ledger_path,
+        {
+            "event_type": "ledger_initialized",
+            "actor": "prooftask",
+            "status": "ready",
+        },
+    )
+    return metadata
+
+
+def validate_ledger_metadata(metadata: dict[str, Any]) -> dict[str, Any]:
+    require_fields(metadata, ["ledger_version", "created_at", "updated_at", "directories"], "ledger")
+    for field in ["ledger_version", "created_at", "updated_at"]:
+        require_non_empty_string(metadata, field, "ledger")
+    if not isinstance(metadata["directories"], list):
+        raise ProofTaskError("ledger.directories must be a list")
+    return metadata
+
+
+def ensure_ledger(ledger: str | Path) -> Path:
+    ledger_path = Path(ledger)
+    metadata_path = ledger_metadata_path(ledger_path)
+    if not metadata_path.exists():
+        raise ProofTaskError(f"Ledger not initialized: {ledger_path}. Run init-ledger first.")
+
+    validate_ledger_metadata(read_json(metadata_path))
+    for name in LEDGER_DIRS:
+        directory = ledger_dir_path(ledger_path, name)
+        if not directory.is_dir():
+            raise ProofTaskError(f"Ledger directory missing: {directory}")
+    return ledger_path
+
+
+def ledger_add_task(ledger: str | Path, task: dict[str, Any], overwrite: bool = False) -> Path:
+    ledger_path = ensure_ledger(ledger)
+    task = validate_task(task)
+    destination = ledger_task_path(ledger_path, task["task_id"])
+
+    if destination.exists() and not overwrite:
+        raise ProofTaskError(f"Task already exists in ledger: {task['task_id']}")
+
+    write_json(destination, task)
+    append_ledger_event(
+        ledger_path,
+        {
+            "event_type": "task_added",
+            "actor": task["created_by"],
+            "task_id": task["task_id"],
+            "status": task["status"],
+            "path": str(destination),
+        },
+    )
+    update_ledger_timestamp(ledger_path)
+    return destination
+
+
+def update_ledger_timestamp(ledger: str | Path) -> None:
+    ledger_path = Path(ledger)
+    metadata_path = ledger_metadata_path(ledger_path)
+    metadata = read_json(metadata_path)
+    metadata["updated_at"] = utc_now()
+    write_json(metadata_path, metadata)
+
+
+def ledger_list_tasks(ledger: str | Path, status: str | None = None) -> list[dict[str, Any]]:
+    ledger_path = ensure_ledger(ledger)
+    tasks: list[dict[str, Any]] = []
+    for task_file in sorted(ledger_dir_path(ledger_path, "tasks").glob("*.json")):
+        task = validate_task(read_json(task_file))
+        if status is None or task["status"] == status:
+            tasks.append(task)
+    return tasks
+
+
+def ledger_inspect_task(ledger: str | Path, task_id: str) -> dict[str, Any]:
+    ledger_path = ensure_ledger(ledger)
+    path = ledger_task_path(ledger_path, task_id)
+    if not path.exists():
+        raise ProofTaskError(f"Task not found in ledger: {task_id}")
+    return validate_task(read_json(path))
+
+
+def print_tasks_table(tasks: list[dict[str, Any]]) -> None:
+    if not tasks:
+        print("No tasks found")
+        return
+
+    print("task_id\tstatus\ttask_type\tcreated_by\tobjective")
+    for task in tasks:
+        objective = task["objective"].replace("\t", " ").replace("\n", " ")
+        print(
+            f"{task['task_id']}\t{task['status']}\t{task['task_type']}\t{task['created_by']}\t{objective}"
+        )
+
+
 def cmd_create_task(args: argparse.Namespace) -> int:
     task = create_task(
         task_type=args.task_type,
@@ -440,6 +587,34 @@ def cmd_verify(args: argparse.Namespace) -> int:
     verified_trace = verify_trace(trace, args.decision, args.verifier, args.reason)
     write_json(args.out, verified_trace)
     print(f"OK {args.decision}: {verified_trace['trace_id']} -> {args.out}")
+    return 0
+
+
+def cmd_init_ledger(args: argparse.Namespace) -> int:
+    metadata = init_ledger(args.ledger, force=args.force)
+    print(f"OK ledger: {args.ledger} version={metadata['ledger_version']}")
+    return 0
+
+
+def cmd_ledger_add_task(args: argparse.Namespace) -> int:
+    task = validate_task(read_json(args.task))
+    destination = ledger_add_task(args.ledger, task, overwrite=args.overwrite)
+    print(f"OK ledger task added: {task['task_id']} -> {destination}")
+    return 0
+
+
+def cmd_list_tasks(args: argparse.Namespace) -> int:
+    tasks = ledger_list_tasks(args.ledger, status=args.status)
+    if args.json:
+        print(json.dumps(tasks, indent=2, ensure_ascii=False))
+    else:
+        print_tasks_table(tasks)
+    return 0
+
+
+def cmd_inspect_task(args: argparse.Namespace) -> int:
+    task = ledger_inspect_task(args.ledger, args.task_id)
+    print(json.dumps(task, indent=2, ensure_ascii=False))
     return 0
 
 
@@ -511,6 +686,28 @@ def build_parser() -> argparse.ArgumentParser:
     verify_parser.add_argument("--reason", default="", help="Optional verification reason")
     verify_parser.add_argument("--out", required=True, help="Output path for final trace JSON")
     verify_parser.set_defaults(func=cmd_verify)
+
+    init_ledger_parser = subcommands.add_parser("init-ledger", help="Initialize a local ProofTask ledger")
+    init_ledger_parser.add_argument("--ledger", default=".prooftask", help="Ledger directory")
+    init_ledger_parser.add_argument("--force", action="store_true", help="Overwrite ledger metadata")
+    init_ledger_parser.set_defaults(func=cmd_init_ledger)
+
+    ledger_add_task_parser = subcommands.add_parser("ledger-add-task", help="Add a task JSON file to a local ledger")
+    ledger_add_task_parser.add_argument("--ledger", default=".prooftask", help="Ledger directory")
+    ledger_add_task_parser.add_argument("--task", required=True, help="Path to task JSON")
+    ledger_add_task_parser.add_argument("--overwrite", action="store_true", help="Overwrite existing task with same ID")
+    ledger_add_task_parser.set_defaults(func=cmd_ledger_add_task)
+
+    list_tasks_parser = subcommands.add_parser("list-tasks", help="List tasks stored in a local ledger")
+    list_tasks_parser.add_argument("--ledger", default=".prooftask", help="Ledger directory")
+    list_tasks_parser.add_argument("--status", choices=sorted(TASK_STATUSES), help="Optional task status filter")
+    list_tasks_parser.add_argument("--json", action="store_true", help="Output JSON instead of table text")
+    list_tasks_parser.set_defaults(func=cmd_list_tasks)
+
+    inspect_task_parser = subcommands.add_parser("inspect-task", help="Inspect one task stored in a local ledger")
+    inspect_task_parser.add_argument("--ledger", default=".prooftask", help="Ledger directory")
+    inspect_task_parser.add_argument("--task-id", required=True, help="Task ID to inspect")
+    inspect_task_parser.set_defaults(func=cmd_inspect_task)
 
     return parser
 
