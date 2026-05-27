@@ -38,29 +38,45 @@ Trace is saved
 Payment can be released
 ```
 
+## Install locally
+
+ProofTask can be run directly as a script or installed as a local CLI.
+
+```bash
+python -m pip install -e .
+prooftask --help
+```
+
+Run tests:
+
+```bash
+python -m pip install -e . pytest
+pytest -q
+```
+
 ## Quickstart
 
 Run the local MVP CLI with the built-in examples:
 
 ```bash
-python prooftask.py validate-task examples/manual_qa_task.json
-python prooftask.py validate-proof examples/manual_qa_proof.json
+prooftask validate-task examples/manual_qa_task.json
+prooftask validate-proof examples/manual_qa_proof.json
 
-python prooftask.py submit-proof \
+prooftask submit-proof \
   --task examples/manual_qa_task.json \
   --proof examples/manual_qa_proof.json \
   --out examples/submitted_trace.json
 
-python prooftask.py validate-trace examples/submitted_trace.json
+prooftask validate-trace examples/submitted_trace.json
 
-python prooftask.py verify \
+prooftask verify \
   --trace examples/submitted_trace.json \
   --decision verified \
   --verifier verifier_demo_001 \
   --reason "All acceptance criteria passed." \
   --out examples/verified_trace.json
 
-python prooftask.py validate-trace examples/verified_trace.json
+prooftask validate-trace examples/verified_trace.json
 ```
 
 Expected result:
@@ -142,13 +158,18 @@ The first version focuses on one narrow use case:
 
 > AI coding agents can create QA microtasks, and human testers can submit proof of verification.
 
+## Roadmap
+
+See [`docs/roadmap.md`](docs/roadmap.md).
+
 ## Repository structure
 
 ```text
 prooftask.py  Dependency-free MVP CLI
+tests/        CLI regression tests
 schemas/      JSON schemas for tasks, proof, and trace records
 examples/     Example agent-created tasks, proof submissions, and invalid fixtures
-docs/         MVP notes, positioning, and demo walkthrough
+docs/         MVP notes, positioning, demo walkthrough, and roadmap
 .github/      CI smoke test for the full verification flow
 ```
 
