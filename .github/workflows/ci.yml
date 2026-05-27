@@ -46,6 +46,14 @@ jobs:
 
           prooftask validate-task .tmp/generated_task.json
 
+      - name: Run local ledger flow
+        run: |
+          prooftask init-ledger --ledger .tmp/.prooftask
+          prooftask ledger-add-task --ledger .tmp/.prooftask --task .tmp/generated_task.json
+          prooftask list-tasks --ledger .tmp/.prooftask
+          prooftask list-tasks --ledger .tmp/.prooftask --json
+          prooftask inspect-task --ledger .tmp/.prooftask --task-id task_ci_generated_001
+
       - name: Validate examples through installed CLI
         run: |
           prooftask validate-task examples/manual_qa_task.json
@@ -116,6 +124,13 @@ jobs:
           invalid_payment_status=$?
           if [ "$invalid_payment_status" -eq 0 ]; then
             echo "Expected negative payment task creation to fail"
+            exit 1
+          fi
+
+          prooftask list-tasks --ledger .tmp/missing-ledger
+          missing_ledger_status=$?
+          if [ "$missing_ledger_status" -eq 0 ]; then
+            echo "Expected missing ledger list to fail"
             exit 1
           fi
 
