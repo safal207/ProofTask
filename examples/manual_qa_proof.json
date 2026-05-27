@@ -1,0 +1,20 @@
+{
+  "proof_id": "proof_001",
+  "task_id": "task_001",
+  "submitted_by": "human_tester_demo_001",
+  "result": "pass",
+  "report": "Signup form was tested on mobile Chrome. Valid test data was submitted successfully and the success screen appeared.",
+  "evidence": [
+    {
+      "type": "screenshot",
+      "uri": "proof://demo/signup-success-mobile-chrome.png",
+      "description": "Success screen after signup submission."
+    }
+  ],
+  "environment": {
+    "device": "Android phone",
+    "os": "Android 15",
+    "browser": "Chrome Mobile"
+  },
+  "submitted_at": "2026-05-27T18:00:00Z"
+}
