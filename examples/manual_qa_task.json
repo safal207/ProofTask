@@ -1,0 +1,27 @@
+{
+  "task_id": "task_001",
+  "created_by": "agent_demo_001",
+  "task_type": "manual_qa_check",
+  "objective": "Verify that the signup form works on mobile Chrome.",
+  "acceptance_criteria": [
+    "Open the signup page on mobile Chrome",
+    "Enter valid test data",
+    "Submit the form",
+    "Confirm that the success screen is shown"
+  ],
+  "proof_required": [
+    "screenshot",
+    "short written report",
+    "pass_or_fail result"
+  ],
+  "payment": {
+    "amount": 5,
+    "currency": "USD",
+    "status": "pending"
+  },
+  "status": "created",
+  "trace": {
+    "reason": "AI coding agent changed signup flow and requested human QA verification before release.",
+    "source": "demo"
+  }
+}
