@@ -109,12 +109,15 @@ For a full walkthrough, see [`docs/demo.md`](docs/demo.md).
 
 ## Local ledger
 
-ProofTask can also keep tasks in a small local file-based ledger:
+ProofTask can also keep tasks, proofs, and traces in a small local file-based ledger:
 
 ```bash
 prooftask init-ledger --ledger .prooftask
 prooftask ledger-add-task --ledger .prooftask --task examples/manual_qa_task.json
-prooftask list-tasks --ledger .prooftask
+prooftask ledger-submit-proof --ledger .prooftask --task-id task_001 --proof examples/manual_qa_proof.json
+prooftask list-traces --ledger .prooftask
+prooftask ledger-verify --ledger .prooftask --trace-id trace_<id> --decision verified --verifier verifier_demo_001
+prooftask inspect-trace --ledger .prooftask --trace-id trace_<id>
 prooftask inspect-task --ledger .prooftask --task-id task_001
 ```
 
@@ -123,16 +126,20 @@ For details, see [`docs/ledger.md`](docs/ledger.md).
 ## CLI commands
 
 ```text
-prooftask create-task       Create a structured task JSON file
-prooftask validate-task     Validate a task JSON file
-prooftask validate-proof    Validate a human proof JSON file
-prooftask submit-proof      Create a submitted trace from task + proof
-prooftask validate-trace    Validate a trace JSON file
-prooftask verify            Verify or reject a submitted trace
-prooftask init-ledger       Initialize a local file-based ledger
-prooftask ledger-add-task   Add a task JSON file to a local ledger
-prooftask list-tasks        List tasks stored in a local ledger
-prooftask inspect-task      Inspect one task stored in a local ledger
+prooftask create-task          Create a structured task JSON file
+prooftask validate-task        Validate a task JSON file
+prooftask validate-proof       Validate a human proof JSON file
+prooftask submit-proof         Create a submitted trace from task + proof
+prooftask validate-trace       Validate a trace JSON file
+prooftask verify               Verify or reject a submitted trace
+prooftask init-ledger          Initialize a local file-based ledger
+prooftask ledger-add-task      Add a task JSON file to a local ledger
+prooftask ledger-submit-proof  Submit proof and store proof + trace in a ledger
+prooftask ledger-verify        Verify or reject a ledger trace
+prooftask list-tasks           List tasks stored in a local ledger
+prooftask inspect-task         Inspect one task stored in a local ledger
+prooftask list-traces          List traces stored in a local ledger
+prooftask inspect-trace        Inspect one trace stored in a local ledger
 ```
 
 ## Schemas
