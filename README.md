@@ -112,12 +112,23 @@ For a full walkthrough, see [`docs/demo.md`](docs/demo.md).
 ProofTask can also keep tasks, proofs, and traces in a small local file-based ledger:
 
 ```bash
+rm -rf .prooftask ledger_traces.json
+
 prooftask init-ledger --ledger .prooftask
 prooftask ledger-add-task --ledger .prooftask --task examples/manual_qa_task.json
 prooftask ledger-submit-proof --ledger .prooftask --task-id task_001 --proof examples/manual_qa_proof.json
-prooftask list-traces --ledger .prooftask
-prooftask ledger-verify --ledger .prooftask --trace-id trace_<id> --decision verified --verifier verifier_demo_001
-prooftask inspect-trace --ledger .prooftask --trace-id trace_<id>
+prooftask list-traces --ledger .prooftask --json > ledger_traces.json
+
+TRACE_ID=$(python - <<'PY'
+import json
+from pathlib import Path
+traces = json.loads(Path('ledger_traces.json').read_text())
+print(traces[0]['trace_id'])
+PY
+)
+
+prooftask ledger-verify --ledger .prooftask --trace-id "$TRACE_ID" --decision verified --verifier verifier_demo_001
+prooftask inspect-trace --ledger .prooftask --trace-id "$TRACE_ID"
 prooftask inspect-task --ledger .prooftask --task-id task_001
 ```
 
