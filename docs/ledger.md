@@ -83,6 +83,20 @@ JSON output:
 prooftask list-traces --ledger .prooftask --json
 ```
 
+To capture the generated trace ID for later commands:
+
+```bash
+prooftask list-traces --ledger .prooftask --json > ledger_traces.json
+
+TRACE_ID=$(python - <<'PY'
+import json
+from pathlib import Path
+traces = json.loads(Path('ledger_traces.json').read_text())
+print(traces[0]['trace_id'])
+PY
+)
+```
+
 Filter by status:
 
 ```bash
@@ -96,7 +110,7 @@ prooftask list-traces --ledger .prooftask --status rejected
 ```bash
 prooftask inspect-trace \
   --ledger .prooftask \
-  --trace-id trace_abc123
+  --trace-id "$TRACE_ID"
 ```
 
 ## Verify or reject a ledger trace
@@ -104,7 +118,7 @@ prooftask inspect-trace \
 ```bash
 prooftask ledger-verify \
   --ledger .prooftask \
-  --trace-id trace_abc123 \
+  --trace-id "$TRACE_ID" \
   --decision verified \
   --verifier verifier_demo_001 \
   --reason "All acceptance criteria passed."
