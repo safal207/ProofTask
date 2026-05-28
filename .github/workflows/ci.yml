@@ -77,6 +77,31 @@ jobs:
 
           prooftask validate-trace .tmp/verified_trace.json
 
+      - name: Run ledger proof and trace flow
+        run: |
+          prooftask init-ledger --ledger .tmp/.proof-ledger
+          prooftask ledger-add-task --ledger .tmp/.proof-ledger --task examples/manual_qa_task.json
+          prooftask ledger-submit-proof --ledger .tmp/.proof-ledger --task-id task_001 --proof examples/manual_qa_proof.json
+          prooftask list-traces --ledger .tmp/.proof-ledger
+          prooftask list-traces --ledger .tmp/.proof-ledger --json > .tmp/ledger_traces.json
+          TRACE_ID=$(python - <<'PY'
+          import json
+          from pathlib import Path
+          traces = json.loads(Path('.tmp/ledger_traces.json').read_text())
+          assert len(traces) == 1
+          print(traces[0]['trace_id'])
+          PY
+          )
+          prooftask inspect-trace --ledger .tmp/.proof-ledger --trace-id "$TRACE_ID"
+          prooftask ledger-verify \
+            --ledger .tmp/.proof-ledger \
+            --trace-id "$TRACE_ID" \
+            --decision verified \
+            --verifier ci_verifier \
+            --reason "Ledger CI verification passed."
+          prooftask list-traces --ledger .tmp/.proof-ledger --status verified
+          prooftask inspect-task --ledger .tmp/.proof-ledger --task-id task_001
+
       - name: Inspect final trace
         run: |
           python - <<'PY'
