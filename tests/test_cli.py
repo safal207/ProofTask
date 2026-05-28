@@ -189,6 +189,82 @@ def test_local_ledger_flow(tmp_path: Path) -> None:
     assert any("task_added" in line for line in events)
 
 
+def test_local_ledger_proof_and_trace_flow(tmp_path: Path) -> None:
+    ledger = tmp_path / ".prooftask"
+
+    assert run_cli("init-ledger", "--ledger", str(ledger)).returncode == 0
+    assert run_cli("ledger-add-task", "--ledger", str(ledger), "--task", str(TASK)).returncode == 0
+
+    submit_result = run_cli(
+        "ledger-submit-proof",
+        "--ledger",
+        str(ledger),
+        "--task-id",
+        "task_001",
+        "--proof",
+        str(PROOF),
+    )
+    assert submit_result.returncode == 0, submit_result.stderr
+    assert (ledger / "proofs" / "proof_001.json").exists()
+
+    submitted_task = json.loads((ledger / "tasks" / "task_001.json").read_text(encoding="utf-8"))
+    assert submitted_task["status"] == "submitted"
+
+    list_traces_result = run_cli("list-traces", "--ledger", str(ledger), "--json")
+    assert list_traces_result.returncode == 0, list_traces_result.stderr
+    traces = json.loads(list_traces_result.stdout)
+    assert len(traces) == 1
+    assert traces[0]["status"] == "submitted"
+    trace_id = traces[0]["trace_id"]
+
+    inspect_trace_result = run_cli("inspect-trace", "--ledger", str(ledger), "--trace-id", trace_id)
+    assert inspect_trace_result.returncode == 0, inspect_trace_result.stderr
+    inspected_trace = json.loads(inspect_trace_result.stdout)
+    assert inspected_trace["trace_id"] == trace_id
+
+    verify_result = run_cli(
+        "ledger-verify",
+        "--ledger",
+        str(ledger),
+        "--trace-id",
+        trace_id,
+        "--decision",
+        "verified",
+        "--verifier",
+        "pytest_verifier",
+        "--reason",
+        "Ledger verification passed.",
+    )
+    assert verify_result.returncode == 0, verify_result.stderr
+
+    verified_trace = json.loads((ledger / "traces" / f"{trace_id}.json").read_text(encoding="utf-8"))
+    assert verified_trace["status"] == "verified"
+    assert verified_trace["verification"]["decision"] == "verified"
+
+    verified_task = json.loads((ledger / "tasks" / "task_001.json").read_text(encoding="utf-8"))
+    assert verified_task["status"] == "verified"
+
+    verified_list_result = run_cli("list-traces", "--ledger", str(ledger), "--status", "verified")
+    assert verified_list_result.returncode == 0, verified_list_result.stderr
+    assert trace_id in verified_list_result.stdout
+
+    duplicate_proof_result = run_cli(
+        "ledger-submit-proof",
+        "--ledger",
+        str(ledger),
+        "--task-id",
+        "task_001",
+        "--proof",
+        str(PROOF),
+    )
+    assert duplicate_proof_result.returncode == 2
+    assert "Task can be submitted only from status" in duplicate_proof_result.stderr
+
+    events = (ledger / "events.jsonl").read_text(encoding="utf-8")
+    assert "proof_submitted" in events
+    assert "trace_verified" in events
+
+
 def test_ledger_requires_initialization(tmp_path: Path) -> None:
     ledger = tmp_path / ".prooftask"
     result = run_cli("list-tasks", "--ledger", str(ledger))
