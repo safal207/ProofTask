@@ -258,7 +258,7 @@ def test_local_ledger_proof_and_trace_flow(tmp_path: Path) -> None:
         str(PROOF),
     )
     assert duplicate_proof_result.returncode == 2
-    assert "Task can be submitted only from status" in duplicate_proof_result.stderr
+    assert "Proof already exists in ledger" in duplicate_proof_result.stderr
 
     events = (ledger / "events.jsonl").read_text(encoding="utf-8")
     assert "proof_submitted" in events
