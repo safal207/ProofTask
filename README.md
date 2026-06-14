@@ -230,6 +230,7 @@ See [`docs/roadmap.md`](docs/roadmap.md).
 - [`docs/pilot-offer.md`](docs/pilot-offer.md) — concrete paid pilot offer for early customer discovery and revenue.
 - [`docs/outreach.md`](docs/outreach.md) — outreach playbook, ICPs, prospecting channels, messages, follow-ups, and discovery questions.
 - [`docs/first-30-prospects.md`](docs/first-30-prospects.md) — first prospect archetypes, qualification scoring, and outreach batch plan.
+- [`docs/discovery-call-script.md`](docs/discovery-call-script.md) — 15-minute discovery call script, scoring, pilot close, and follow-up templates.
 
 ## Repository structure
 
@@ -238,7 +239,7 @@ prooftask.py  Dependency-free MVP CLI
 tests/        CLI regression tests
 schemas/      JSON schemas for tasks, proof, and trace records
 examples/     Example agent-created tasks, proof submissions, and invalid fixtures
-docs/         MVP notes, positioning, demo walkthrough, ledger guide, market thesis, business model, pilot offer, outreach, first prospects, and roadmap
+docs/         MVP notes, positioning, demo walkthrough, ledger guide, market thesis, business model, pilot offer, outreach, first prospects, discovery script, and roadmap
 .github/      CI smoke test for the full verification flow
 ```
 
