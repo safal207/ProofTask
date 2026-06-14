@@ -111,6 +111,7 @@ For a full walkthrough, see [`docs/demo.md`](docs/demo.md).
 
 ProofTask also includes demo artifacts for an AI-generated GitHub PR verification loop:
 
+- [`docs/ai-pr-verification-walkthrough.md`](docs/ai-pr-verification-walkthrough.md) — step-by-step walkthrough for demoing the full AI PR verification loop.
 - [`examples/github_pr_task.json`](examples/github_pr_task.json) — verification task for a demo PR.
 - [`examples/github_pr_proof.json`](examples/github_pr_proof.json) — human proof submission for the task.
 - [`examples/github_pr_verified_trace.json`](examples/github_pr_verified_trace.json) — verified trace connecting task, proof, decision, and events.
@@ -255,6 +256,7 @@ See [`docs/roadmap.md`](docs/roadmap.md).
 - [`docs/pilot-report-template.md`](docs/pilot-report-template.md) — client-ready pilot report template with proof, findings, risks, recommendations, and next steps.
 - [`docs/github-workflow.md`](docs/github-workflow.md) — future GitHub PR verification workflow for AI-generated changes.
 - [`docs/demo-pr-flow.md`](docs/demo-pr-flow.md) — 3-minute demo scenario for showing an AI-generated PR verification loop.
+- [`docs/ai-pr-verification-walkthrough.md`](docs/ai-pr-verification-walkthrough.md) — hands-on walkthrough for demoing task, proof, trace, and PR comment generation.
 
 ## Repository structure
 
@@ -263,7 +265,7 @@ prooftask.py  Dependency-free MVP CLI
 tests/        CLI regression tests
 schemas/      JSON schemas for tasks, proof, and trace records
 examples/     Example agent-created tasks, proof submissions, invalid fixtures, and GitHub PR verification demo artifacts
-docs/         MVP notes, positioning, demo walkthrough, ledger guide, market thesis, business model, pilot offer, outreach, first prospects, discovery script, pilot report template, GitHub workflow, demo PR flow, MVP scope, and roadmap
+docs/         MVP notes, positioning, demo walkthrough, ledger guide, market thesis, business model, pilot offer, outreach, first prospects, discovery script, pilot report template, GitHub workflow, demo PR flow, AI PR walkthrough, MVP scope, and roadmap
 .github/      CI smoke test for the full verification flow
 ```
 
