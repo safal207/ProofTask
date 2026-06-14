@@ -233,6 +233,7 @@ See [`docs/roadmap.md`](docs/roadmap.md).
 - [`docs/discovery-call-script.md`](docs/discovery-call-script.md) — 15-minute discovery call script, scoring, pilot close, and follow-up templates.
 - [`docs/pilot-report-template.md`](docs/pilot-report-template.md) — client-ready pilot report template with proof, findings, risks, recommendations, and next steps.
 - [`docs/github-workflow.md`](docs/github-workflow.md) — future GitHub PR verification workflow for AI-generated changes.
+- [`docs/demo-pr-flow.md`](docs/demo-pr-flow.md) — 3-minute demo scenario for showing an AI-generated PR verification loop.
 
 ## Repository structure
 
@@ -241,7 +242,7 @@ prooftask.py  Dependency-free MVP CLI
 tests/        CLI regression tests
 schemas/      JSON schemas for tasks, proof, and trace records
 examples/     Example agent-created tasks, proof submissions, and invalid fixtures
-docs/         MVP notes, positioning, demo walkthrough, ledger guide, market thesis, business model, pilot offer, outreach, first prospects, discovery script, pilot report template, GitHub workflow, and roadmap
+docs/         MVP notes, positioning, demo walkthrough, ledger guide, market thesis, business model, pilot offer, outreach, first prospects, discovery script, pilot report template, GitHub workflow, demo PR flow, and roadmap
 .github/      CI smoke test for the full verification flow
 ```
 
