@@ -1,0 +1,30 @@
+{
+  "proof_id": "proof_pr_124_mobile_signup",
+  "task_id": "github_pr_124_mobile_signup_check",
+  "submitted_by": "tester_demo_001",
+  "result": "pass",
+  "report": "Tested the AI-generated signup flow update on mobile Chrome. The signup page opened successfully, valid test data was submitted, and the success screen appeared. No obvious visual regression was observed in the primary CTA.",
+  "evidence": [
+    {
+      "type": "screenshot",
+      "uri": "artifact://screenshots/pr-124-mobile-signup-success.png",
+      "description": "Signup success screen on mobile Chrome after submitting valid test data."
+    },
+    {
+      "type": "text",
+      "uri": "artifact://reports/pr-124-mobile-signup-notes.txt",
+      "description": "Short written tester notes confirming acceptance criteria passed."
+    },
+    {
+      "type": "link",
+      "uri": "https://github.com/demo/acme-saas/pull/124",
+      "description": "Demo pull request being verified."
+    }
+  ],
+  "environment": {
+    "device": "Pixel 7 viewport / mobile browser simulation",
+    "os": "Android 14",
+    "browser": "Chrome Mobile"
+  },
+  "submitted_at": "2026-06-14T10:05:00Z"
+}
