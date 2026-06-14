@@ -9,6 +9,7 @@ A tiny, dependency-free CLI for the first ProofTask MVP:
 - validate a verification trace JSON file
 - create a submitted trace from task + proof
 - verify or reject the submitted trace
+- render a PR-ready verification comment from a trace
 - keep a small local task/proof/trace ledger
 
 This is intentionally small. It is a seed mechanism, not a full marketplace.
@@ -71,6 +72,12 @@ def write_json(path: str | Path, data: dict[str, Any]) -> None:
     with file_path.open("w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
         f.write("\n")
+
+
+def write_text(path: str | Path, content: str) -> None:
+    file_path = Path(path)
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    file_path.write_text(content, encoding="utf-8")
 
 
 def require_fields(data: dict[str, Any], required: list[str], kind: str) -> None:
@@ -222,7 +229,7 @@ def validate_trace(trace: dict[str, Any]) -> dict[str, Any]:
     proof = validate_proof(trace["proof"])
     ensure_task_proof_match(task, proof)
     if trace["task_id"] != task["task_id"]:
-        raise ProofTaskError(f"Trace/task mismatch: trace.task_id {trace['task_id']!r} != {task['task_id']!r}")
+        raise ProofTaskError(f"Trace/task mismatch: trace.task_id {trace['task_id']!r} != task.task_id {task['task_id']!r}")
     if trace["status"] != task["status"]:
         raise ProofTaskError(f"Trace/task status mismatch: trace.status {trace['status']!r} != task.status {task['status']!r}")
     events = trace["events"]
@@ -270,6 +277,106 @@ def verify_trace(trace: dict[str, Any], decision: str, verifier: str, reason: st
     verified_trace["verification"] = {"decision": decision, "verifier": verifier, "reason": reason or "", "verified_at": now}
     verified_trace["events"].append({"event_type": "task_verified" if decision == "verified" else "task_rejected", "status": decision, "at": now, "actor": verifier, "reason": reason or ""})
     return verified_trace
+
+
+def get_nested_string(data: dict[str, Any], key: str, default: str = "") -> str:
+    value = data.get(key, default)
+    if value is None:
+        return default
+    return str(value)
+
+
+def format_evidence_items(proof: dict[str, Any]) -> list[str]:
+    evidence = proof.get("evidence") or []
+    if not isinstance(evidence, list) or not evidence:
+        return ["No evidence artifacts listed."]
+    items: list[str] = []
+    for item in evidence:
+        if not isinstance(item, dict):
+            continue
+        evidence_type = get_nested_string(item, "type", "evidence")
+        description = get_nested_string(item, "description", "")
+        uri = get_nested_string(item, "uri", "")
+        text = f"{evidence_type}: {description}" if description else evidence_type
+        if uri:
+            text = f"{text} ({uri})"
+        items.append(text)
+    return items or ["No readable evidence artifacts listed."]
+
+
+def render_pr_comment(trace: dict[str, Any]) -> str:
+    trace = validate_trace(trace)
+    task = trace["task"]
+    proof = trace["proof"]
+    metadata = task.get("trace") if isinstance(task.get("trace"), dict) else {}
+    verification = trace.get("verification") if isinstance(trace.get("verification"), dict) else {}
+
+    status = trace["status"]
+    decision = get_nested_string(verification, "decision", status)
+    verifier = get_nested_string(verification, "verifier", "not verified yet")
+    reason = get_nested_string(verification, "reason", "No verifier reason provided.")
+    if not reason.strip():
+        reason = "No verifier reason provided."
+
+    if status == "verified":
+        recommendation = "This PR can be considered for merge after normal code review and CI pass."
+    elif status == "rejected":
+        recommendation = "Do not merge this PR until the issues are fixed and verification is repeated."
+    else:
+        recommendation = "Verification is still pending. Do not use this trace as a merge approval yet."
+
+    repository = get_nested_string(metadata, "repository", "unknown repository")
+    pr_number = get_nested_string(metadata, "pull_request_number", "unknown")
+    pr_title = get_nested_string(metadata, "pull_request_title", task["objective"])
+    changed_area = get_nested_string(metadata, "changed_area", "not specified")
+    risk_area = get_nested_string(metadata, "risk_area", "not specified")
+    gate = get_nested_string(metadata, "verification_gate", "human verification")
+
+    criteria = task.get("acceptance_criteria", [])
+    proof_result = proof.get("result", "unknown")
+    evidence_items = format_evidence_items(proof)
+
+    lines = [
+        f"## ProofTask result: {status}",
+        "",
+        f"Verification trace `{trace['trace_id']}` is linked to task `{trace['task_id']}`.",
+        "",
+        "### PR context",
+        "",
+        f"- Repository: `{repository}`",
+        f"- Pull request: `#{pr_number} - {pr_title}`",
+        f"- Changed area: `{changed_area}`",
+        f"- Risk area: `{risk_area}`",
+        f"- Verification gate: `{gate}`",
+        "",
+        "### What was checked",
+        "",
+    ]
+    lines.extend(f"- {criterion}" for criterion in criteria)
+    lines.extend([
+        "",
+        "### Proof submitted",
+        "",
+        f"- Proof ID: `{proof.get('proof_id', '')}`",
+        f"- Submitted by: `{proof.get('submitted_by', '')}`",
+        f"- Result: `{proof_result}`",
+    ])
+    lines.extend(f"- Evidence: {item}" for item in evidence_items)
+    lines.extend([
+        "",
+        "### Verifier decision",
+        "",
+        f"- Decision: `{decision}`",
+        f"- Verifier: `{verifier}`",
+        f"- Reason: {reason}",
+        "",
+        "### Recommendation",
+        "",
+        recommendation,
+        "",
+        "ProofTask adds structured human proof. It does not replace code review or automated tests.",
+    ])
+    return "\n".join(lines) + "\n"
 
 
 def ledger_metadata_path(ledger: str | Path) -> Path:
@@ -491,6 +598,16 @@ def cmd_verify(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_render_pr_comment(args: argparse.Namespace) -> int:
+    comment = render_pr_comment(read_json(args.trace))
+    if args.out:
+        write_text(args.out, comment)
+        print(f"OK PR comment: {args.out}")
+    else:
+        print(comment, end="")
+    return 0
+
+
 def cmd_init_ledger(args: argparse.Namespace) -> int:
     metadata = init_ledger(args.ledger, force=args.force)
     print(f"OK ledger: {args.ledger} version={metadata['ledger_version']}")
@@ -585,6 +702,11 @@ def build_parser() -> argparse.ArgumentParser:
     verify_parser.add_argument("--reason", default="", help="Optional verification reason")
     verify_parser.add_argument("--out", required=True, help="Output path for final trace JSON")
     verify_parser.set_defaults(func=cmd_verify)
+
+    render_pr_comment_parser = subcommands.add_parser("render-pr-comment", help="Render a PR-ready markdown comment from a trace JSON file")
+    render_pr_comment_parser.add_argument("--trace", required=True, help="Path to trace JSON")
+    render_pr_comment_parser.add_argument("--out", help="Optional output path for markdown comment. Prints to stdout when omitted.")
+    render_pr_comment_parser.set_defaults(func=cmd_render_pr_comment)
 
     init_ledger_parser = subcommands.add_parser("init-ledger", help="Initialize a local ProofTask ledger")
     init_ledger_parser.add_argument("--ledger", default=".prooftask", help="Ledger directory")
