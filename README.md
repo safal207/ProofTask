@@ -38,6 +38,12 @@ Trace is saved
 Payment can be released
 ```
 
+## Landing page
+
+A static landing page is available at [`site/index.html`](site/index.html).
+
+It can be opened locally or deployed with GitHub Pages, Vercel, Netlify, or any static hosting provider.
+
 ## Install locally
 
 ProofTask can be run directly as a script or installed as a local CLI.
@@ -265,6 +271,7 @@ See [`docs/roadmap.md`](docs/roadmap.md).
 
 ```text
 prooftask.py  Dependency-free MVP CLI
+site/         Static landing page for ProofTask
 tests/        CLI regression tests
 schemas/      JSON schemas for tasks, proof, and trace records
 examples/     Example agent-created tasks, proof submissions, invalid fixtures, GitHub PR verification demo artifacts, and pilot report output
