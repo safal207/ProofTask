@@ -223,6 +223,11 @@ The first version focuses on one narrow use case:
 
 See [`docs/roadmap.md`](docs/roadmap.md).
 
+## Business and market
+
+- [`docs/market.md`](docs/market.md) — market thesis, target users, wedge, and expansion path.
+- [`docs/business-model.md`](docs/business-model.md) — pilot-led monetization, future SaaS pricing, and marketplace timing.
+
 ## Repository structure
 
 ```text
@@ -230,7 +235,7 @@ prooftask.py  Dependency-free MVP CLI
 tests/        CLI regression tests
 schemas/      JSON schemas for tasks, proof, and trace records
 examples/     Example agent-created tasks, proof submissions, and invalid fixtures
-docs/         MVP notes, positioning, demo walkthrough, ledger guide, and roadmap
+docs/         MVP notes, positioning, demo walkthrough, ledger guide, market thesis, business model, and roadmap
 .github/      CI smoke test for the full verification flow
 ```
 
