@@ -117,6 +117,14 @@ ProofTask also includes demo artifacts for an AI-generated GitHub PR verificatio
 - [`examples/github_pr_trace_summary.md`](examples/github_pr_trace_summary.md) — buyer-readable trace summary with decision, proof, timeline, and recommendation.
 - [`examples/github_pr_comment_verified.md`](examples/github_pr_comment_verified.md) — PR-ready verification comment.
 
+Render a PR-ready comment from a trace:
+
+```bash
+prooftask render-pr-comment \
+  --trace examples/github_pr_verified_trace.json \
+  --out examples/generated_github_pr_comment.md
+```
+
 ## Local ledger
 
 ProofTask can also keep tasks, proofs, and traces in a small local file-based ledger:
@@ -153,6 +161,7 @@ prooftask validate-proof       Validate a human proof JSON file
 prooftask submit-proof         Create a submitted trace from task + proof
 prooftask validate-trace       Validate a trace JSON file
 prooftask verify               Verify or reject a submitted trace
+prooftask render-pr-comment    Render a PR-ready markdown comment from a trace
 prooftask init-ledger          Initialize a local file-based ledger
 prooftask ledger-add-task      Add a task JSON file to a local ledger
 prooftask ledger-submit-proof  Submit proof and store proof + trace in a ledger
