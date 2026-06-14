@@ -117,6 +117,7 @@ ProofTask also includes demo artifacts for an AI-generated GitHub PR verificatio
 - [`examples/github_pr_verified_trace.json`](examples/github_pr_verified_trace.json) — verified trace connecting task, proof, decision, and events.
 - [`examples/github_pr_trace_summary.md`](examples/github_pr_trace_summary.md) — buyer-readable trace summary with decision, proof, timeline, and recommendation.
 - [`examples/github_pr_comment_verified.md`](examples/github_pr_comment_verified.md) — PR-ready verification comment.
+- [`examples/pilot_report_signup_flow.md`](examples/pilot_report_signup_flow.md) — client-facing pilot report for the verified signup flow PR.
 
 Render a PR-ready comment from a trace:
 
@@ -264,7 +265,7 @@ See [`docs/roadmap.md`](docs/roadmap.md).
 prooftask.py  Dependency-free MVP CLI
 tests/        CLI regression tests
 schemas/      JSON schemas for tasks, proof, and trace records
-examples/     Example agent-created tasks, proof submissions, invalid fixtures, and GitHub PR verification demo artifacts
+examples/     Example agent-created tasks, proof submissions, invalid fixtures, GitHub PR verification demo artifacts, and pilot report output
 docs/         MVP notes, positioning, demo walkthrough, ledger guide, market thesis, business model, pilot offer, outreach, first prospects, discovery script, pilot report template, GitHub workflow, demo PR flow, AI PR walkthrough, MVP scope, and roadmap
 .github/      CI smoke test for the full verification flow
 ```
