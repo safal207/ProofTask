@@ -1,0 +1,39 @@
+{
+  "task_id": "github_pr_124_mobile_signup_check",
+  "created_by": "github_pr_124",
+  "task_type": "manual_qa_check",
+  "objective": "Verify that the signup flow works on mobile Chrome after AI-generated changes.",
+  "acceptance_criteria": [
+    "Open the signup page on mobile Chrome",
+    "Enter valid test data",
+    "Submit the signup form",
+    "Confirm the success screen is shown",
+    "Confirm there is no obvious visual regression in the primary CTA"
+  ],
+  "proof_required": [
+    "screenshot of the success screen",
+    "short written report",
+    "pass/fail result",
+    "browser and device context"
+  ],
+  "payment": {
+    "amount": 5,
+    "currency": "USD",
+    "status": "pending"
+  },
+  "status": "created",
+  "trace": {
+    "source": "github_pr",
+    "repository": "demo/acme-saas",
+    "pull_request_number": 124,
+    "pull_request_title": "Update signup flow",
+    "pull_request_url": "https://github.com/demo/acme-saas/pull/124",
+    "labels": [
+      "ai-generated",
+      "prooftask:required"
+    ],
+    "ai_tool_or_agent": "agent_demo_001",
+    "risk_area": "signup conversion and mobile UX",
+    "release_recommendation_target": "merge decision"
+  }
+}
