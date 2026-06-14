@@ -114,6 +114,7 @@ ProofTask also includes demo artifacts for an AI-generated GitHub PR verificatio
 - [`examples/github_pr_task.json`](examples/github_pr_task.json) — verification task for a demo PR.
 - [`examples/github_pr_proof.json`](examples/github_pr_proof.json) — human proof submission for the task.
 - [`examples/github_pr_verified_trace.json`](examples/github_pr_verified_trace.json) — verified trace connecting task, proof, decision, and events.
+- [`examples/github_pr_trace_summary.md`](examples/github_pr_trace_summary.md) — buyer-readable trace summary with decision, proof, timeline, and recommendation.
 - [`examples/github_pr_comment_verified.md`](examples/github_pr_comment_verified.md) — PR-ready verification comment.
 
 ## Local ledger
