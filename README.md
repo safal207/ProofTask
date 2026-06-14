@@ -107,6 +107,15 @@ OK trace: trace_<id> task=task_001 status=verified
 
 For a full walkthrough, see [`docs/demo.md`](docs/demo.md).
 
+## GitHub PR verification demo artifacts
+
+ProofTask also includes demo artifacts for an AI-generated GitHub PR verification loop:
+
+- [`examples/github_pr_task.json`](examples/github_pr_task.json) — verification task for a demo PR.
+- [`examples/github_pr_proof.json`](examples/github_pr_proof.json) — human proof submission for the task.
+- [`examples/github_pr_verified_trace.json`](examples/github_pr_verified_trace.json) — verified trace connecting task, proof, decision, and events.
+- [`examples/github_pr_comment_verified.md`](examples/github_pr_comment_verified.md) — PR-ready verification comment.
+
 ## Local ledger
 
 ProofTask can also keep tasks, proofs, and traces in a small local file-based ledger:
@@ -243,7 +252,7 @@ See [`docs/roadmap.md`](docs/roadmap.md).
 prooftask.py  Dependency-free MVP CLI
 tests/        CLI regression tests
 schemas/      JSON schemas for tasks, proof, and trace records
-examples/     Example agent-created tasks, proof submissions, and invalid fixtures
+examples/     Example agent-created tasks, proof submissions, invalid fixtures, and GitHub PR verification demo artifacts
 docs/         MVP notes, positioning, demo walkthrough, ledger guide, market thesis, business model, pilot offer, outreach, first prospects, discovery script, pilot report template, GitHub workflow, demo PR flow, MVP scope, and roadmap
 .github/      CI smoke test for the full verification flow
 ```
