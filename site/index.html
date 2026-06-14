@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ProofTask — Human verification for AI-generated work</title>
+  <meta name="description" content="ProofTask adds structured human proof to AI-generated software work before merge, release, or payment." />
+  <style>
+    :root {
+      --bg: #050914;
+      --bg-soft: #081225;
+      --card: rgba(12, 24, 48, 0.78);
+      --card-strong: rgba(17, 34, 68, 0.92);
+      --line: rgba(101, 199, 255, 0.25);
+      --line-strong: rgba(86, 205, 255, 0.66);
+      --text: #f6fbff;
+      --muted: #aab7cc;
+      --muted-2: #74839c;
+      --blue: #2d8cff;
+      --cyan: #5be7ff;
+      --green: #43e88d;
+      --danger: #ff6c7a;
+      --shadow: 0 28px 90px rgba(0, 0, 0, 0.45);
+      --radius: 28px;
+      --radius-sm: 18px;
+      --max: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 8%, rgba(45, 140, 255, 0.26), transparent 28%),
+        radial-gradient(circle at 80% 15%, rgba(91, 231, 255, 0.14), transparent 30%),
+        radial-gradient(circle at 75% 80%, rgba(67, 232, 141, 0.08), transparent 28%),
+        var(--bg);
+      line-height: 1.55;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page-shell {
+      overflow: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .page-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: linear-gradient(to bottom, black, transparent 72%);
+      pointer-events: none;
+    }
+
+    .container {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 26px 0;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: -0.03em;
+    }
+
+    .logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(45, 140, 255, 0.24), rgba(91, 231, 255, 0.08));
+      border: 1px solid var(--line-strong);
+      box-shadow: 0 0 32px rgba(45, 140, 255, 0.28);
+    }
+
+    .logo svg {
+      width: 23px;
+      height: 23px;
+    }
+
+    .brand span span {
+      color: var(--blue);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 13px 18px;
+      border-radius: 999px;
+      font-weight: 750;
+      font-size: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      border-color: rgba(91, 231, 255, 0.45);
+      background: rgba(91, 231, 255, 0.08);
+    }
+
+    .button.primary {
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      color: #03101f;
+      border-color: transparent;
+      box-shadow: 0 18px 44px rgba(45, 140, 255, 0.35);
+    }
+
+    .hero {
+      padding: 70px 0 64px;
+      display: grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      gap: 46px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: #bceeff;
+      background: rgba(91, 231, 255, 0.08);
+      border: 1px solid rgba(91, 231, 255, 0.2);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 22px;
+    }
+
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 6px rgba(67, 232, 141, 0.1);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(52px, 8vw, 92px);
+      line-height: 0.94;
+      letter-spacing: -0.075em;
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, #ffffff, #a9f3ff 52%, #2d8cff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-copy {
+      margin: 26px 0 0;
+      max-width: 640px;
+      color: var(--muted);
+      font-size: 20px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 34px;
+    }
+
+    .hero-proof {
+      margin-top: 34px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      max-width: 640px;
+    }
+
+    .metric {
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.035);
+      border-radius: 18px;
+    }
+
+    .metric strong {
+      display: block;
+      color: var(--text);
+      font-size: 20px;
+      letter-spacing: -0.03em;
+    }
+
+    .metric span {
+      color: var(--muted-2);
+      font-size: 13px;
+    }
+
+    .demo-card {
+      background: linear-gradient(180deg, rgba(18, 37, 73, 0.92), rgba(5, 12, 28, 0.9));
+      border: 1px solid rgba(91, 231, 255, 0.24);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow), 0 0 70px rgba(45, 140, 255, 0.17);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .demo-card::after {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: rgba(91, 231, 255, 0.11);
+      filter: blur(55px);
+      right: -80px;
+      top: -80px;
+    }
+
+    .browser-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px 16px;
+      color: var(--muted-2);
+      font-size: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .dots {
+      display: flex;
+      gap: 7px;
+    }
+
+    .dots i {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .flow-stack {
+      display: grid;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .flow-item {
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 14px;
+      background: rgba(3, 10, 23, 0.58);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+    }
+
+    .flow-number {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: rgba(45, 140, 255, 0.18);
+      color: #dff8ff;
+      font-weight: 800;
+      border: 1px solid rgba(91, 231, 255, 0.3);
+    }
+
+    .flow-item strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .flow-item span {
+      color: var(--muted-2);
+      font-size: 12px;
+    }
+
+    .status {
+      color: var(--green);
+      font-weight: 800;
+      font-size: 12px;
+      background: rgba(67, 232, 141, 0.1);
+      border: 1px solid rgba(67, 232, 141, 0.2);
+      padding: 6px 9px;
+      border-radius: 999px;
+    }
+
+    section {
+      padding: 76px 0;
+    }
+
+    .section-head {
+      max-width: 780px;
+      margin-bottom: 34px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(34px, 4vw, 56px);
+      line-height: 1;
+      letter-spacing: -0.055em;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      font-size: 18px;
+      margin: 18px 0 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-sm);
+      padding: 24px;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.18);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+      letter-spacing: -0.03em;
+    }
+
+    .card p,
+    .card li {
+      color: var(--muted);
+    }
+
+    .card p {
+      margin: 0;
+    }
+
+    .icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: rgba(91, 231, 255, 0.08);
+      border: 1px solid rgba(91, 231, 255, 0.18);
+      color: var(--cyan);
+      margin-bottom: 18px;
+      font-weight: 900;
+    }
+
+    .proof-flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 30px;
+    }
+
+    .step {
+      min-height: 150px;
+      position: relative;
+      padding: 20px;
+      background: var(--card-strong);
+      border: 1px solid rgba(91, 231, 255, 0.18);
+      border-radius: 22px;
+    }
+
+    .step::after {
+      content: "→";
+      position: absolute;
+      right: -15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--cyan);
+      font-size: 26px;
+      text-shadow: 0 0 18px rgba(91, 231, 255, 0.55);
+    }
+
+    .step:last-child::after {
+      content: "";
+    }
+
+    .step small {
+      color: var(--cyan);
+      font-weight: 900;
+    }
+
+    .step strong {
+      display: block;
+      margin: 10px 0 6px;
+      letter-spacing: -0.03em;
+    }
+
+    .step span {
+      color: var(--muted-2);
+      font-size: 13px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .check-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    .check-list li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      color: var(--muted);
+    }
+
+    .check-list li::before {
+      content: "✓";
+      flex: 0 0 24px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(67, 232, 141, 0.12);
+      color: var(--green);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .code-card {
+      background: #030814;
+      border: 1px solid rgba(91, 231, 255, 0.16);
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .code-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    pre {
+      margin: 0;
+      padding: 20px;
+      overflow-x: auto;
+      color: #d7e7ff;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .green {
+      color: var(--green);
+    }
+
+    .blue {
+      color: var(--cyan);
+    }
+
+    .pricing {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .price {
+      font-size: 36px;
+      line-height: 1;
+      letter-spacing: -0.06em;
+      margin: 14px 0 18px;
+      font-weight: 900;
+    }
+
+    .price span {
+      color: var(--muted-2);
+      font-size: 14px;
+      letter-spacing: 0;
+      font-weight: 700;
+    }
+
+    .cta-panel {
+      padding: 44px;
+      border: 1px solid rgba(91, 231, 255, 0.26);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(45, 140, 255, 0.18), transparent 28%),
+        radial-gradient(circle at 80% 30%, rgba(91, 231, 255, 0.12), transparent 28%),
+        rgba(12, 24, 48, 0.82);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 30px;
+      box-shadow: var(--shadow);
+    }
+
+    .cta-panel h2 {
+      margin: 0;
+      font-size: clamp(32px, 4vw, 54px);
+      letter-spacing: -0.055em;
+      line-height: 1;
+    }
+
+    .cta-panel p {
+      margin: 16px 0 0;
+      color: var(--muted);
+      max-width: 650px;
+    }
+
+    footer {
+      padding: 40px 0 54px;
+      color: var(--muted-2);
+      font-size: 14px;
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .two-col,
+      .cta-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 34px;
+      }
+
+      .grid-3,
+      .pricing {
+        grid-template-columns: 1fr;
+      }
+
+      .proof-flow {
+        grid-template-columns: 1fr;
+      }
+
+      .step::after {
+        content: "↓";
+        right: 22px;
+        top: auto;
+        bottom: -22px;
+        transform: none;
+      }
+
+      .hero-proof {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="container nav">
+      <a class="brand" href="#top" aria-label="ProofTask home">
+        <span class="logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 21 8 12 13 3 8 12 3Z" stroke="currentColor" stroke-width="2.2"/><path d="M5 12.2 12 16l7-3.8" stroke="currentColor" stroke-width="2.2"/><path d="M5 16.2 12 20l7-3.8" stroke="currentColor" stroke-width="2.2"/></svg>
+        </span>
+        <span>Proof<span>Task</span></span>
+      </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="#problem">Problem</a>
+        <a href="#flow">Flow</a>
+        <a href="#pilot">Pilot</a>
+        <a href="#cta">Contact</a>
+      </nav>
+      <a class="button" href="https://github.com/safal207/ProofTask">View GitHub</a>
+    </header>
+
+    <main id="top">
+      <section class="container hero">
+        <div>
+          <div class="eyebrow"><span class="pulse"></span> Human verification for agentic work</div>
+          <h1>AI creates.<br><span class="gradient-text">Humans verify.</span></h1>
+          <p class="hero-copy">ProofTask adds structured human proof to AI-generated software work before merge, release, or payment.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#cta">Run a pilot</a>
+            <a class="button" href="#flow">See the workflow</a>
+          </div>
+          <div class="hero-proof">
+            <div class="metric"><strong>PR-ready</strong><span>verification comment</span></div>
+            <div class="metric"><strong>Traceable</strong><span>task, proof, decision</span></div>
+            <div class="metric"><strong>Focused</strong><span>AI Agent QA Proof Audit</span></div>
+          </div>
+        </div>
+
+        <div class="demo-card" aria-label="ProofTask verification demo">
+          <div class="browser-bar">
+            <span class="dots"><i></i><i></i><i></i></span>
+            <span>Proof trail / PR #124</span>
+          </div>
+          <div class="flow-stack">
+            <div class="flow-item">
+              <div class="flow-number">1</div>
+              <div><strong>AI-generated PR</strong><span>Signup flow changed by an agent</span></div>
+              <div class="status">Open</div>
+            </div>
+            <div class="flow-item">
+              <div class="flow-number">2</div>
+              <div><strong>Verification task</strong><span>Acceptance criteria and proof required</span></div>
+              <div class="status">Assigned</div>
+            </div>
+            <div class="flow-item">
+              <div class="flow-number">3</div>
+              <div><strong>Human proof</strong><span>Screenshot, report, browser context</span></div>
+              <div class="status">Submitted</div>
+            </div>
+            <div class="flow-item">
+              <div class="flow-number">4</div>
+              <div><strong>Verifier decision</strong><span>Accepted with reason and timestamp</span></div>
+              <div class="status">Verified</div>
+            </div>
+            <div class="flow-item">
+              <div class="flow-number">5</div>
+              <div><strong>PR-ready comment</strong><span>Maintainer sees the proof trail</span></div>
+              <div class="status">Ready</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="container" id="problem">
+        <div class="section-head">
+          <h2>AI can ship faster than teams can verify.</h2>
+          <p>AI coding agents create PRs, fixes, and features quickly. But merge confidence still needs human evidence: what was checked, who checked it, what proof exists, and why the work is safe to move forward.</p>
+        </div>
+        <div class="grid-3">
+          <div class="card">
+            <div class="icon">?</div>
+            <h3>Review uncertainty</h3>
+            <p>Teams struggle to know whether an AI-generated change was actually checked in a real browser, device, or workflow.</p>
+          </div>
+          <div class="card">
+            <div class="icon">↯</div>
+            <h3>Scattered proof</h3>
+            <p>Screenshots, QA notes, review comments, and release decisions get buried across chats, PRs, docs, and issue trackers.</p>
+          </div>
+          <div class="card">
+            <div class="icon">✓</div>
+            <h3>No clear trace</h3>
+            <p>When something breaks, teams need to know what was verified, what evidence existed, and who accepted the proof.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="container" id="flow">
+        <div class="section-head">
+          <h2>One clean proof loop.</h2>
+          <p>ProofTask turns AI-generated work into a structured verification flow that ends with a traceable decision and a PR-ready recommendation.</p>
+        </div>
+        <div class="proof-flow">
+          <div class="step"><small>01</small><strong>AI-generated PR</strong><span>An agent creates or changes code that may affect users.</span></div>
+          <div class="step"><small>02</small><strong>Verification task</strong><span>Acceptance criteria and required proof are explicit.</span></div>
+          <div class="step"><small>03</small><strong>Human proof</strong><span>A tester submits evidence, result, and environment context.</span></div>
+          <div class="step"><small>04</small><strong>Verifier decision</strong><span>A human accepts, rejects, or asks for a recheck.</span></div>
+          <div class="step"><small>05</small><strong>PR-ready comment</strong><span>The maintainer gets a clear proof trail and recommendation.</span></div>
+        </div>
+      </section>
+
+      <section class="container">
+        <div class="two-col">
+          <div class="section-head">
+            <h2>What the proof includes.</h2>
+            <p>The output is not another vague “LGTM”. It is a structured artifact that supports merge, release, recheck, or rejection decisions.</p>
+            <ul class="check-list">
+              <li>What was checked</li>
+              <li>Who checked it</li>
+              <li>What evidence exists</li>
+              <li>Who accepted or rejected it</li>
+              <li>Why it is safe to move forward</li>
+            </ul>
+          </div>
+          <div class="code-card">
+            <div class="code-head"><span>PR-ready comment</span><span class="green">verified</span></div>
+            <pre><code>## ProofTask result: verified
+
+Trace: <span class="blue">trace_pr_124_demo</span>
+Task: <span class="blue">github_pr_124_mobile_signup_check</span>
+
+### What was checked
+- Signup page opens on mobile Chrome
+- Valid test data can be submitted
+- Success screen is shown
+
+### Verifier decision
+- Decision: <span class="green">verified</span>
+- Reason: All acceptance criteria passed
+
+Recommendation:
+This PR can be considered for merge after
+normal code review and CI pass.</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="container" id="pilot">
+        <div class="section-head">
+          <h2>Start with a focused pilot.</h2>
+          <p>ProofTask should begin as a paid, narrow proof audit for one real AI-generated PR or feature. Learn the buyer. Prove the value. Productize what repeats.</p>
+        </div>
+        <div class="pricing">
+          <div class="card">
+            <h3>Starter</h3>
+            <div class="price">$2.5k <span>/ pilot</span></div>
+            <ul class="check-list">
+              <li>One PR or feature</li>
+              <li>Acceptance criteria</li>
+              <li>Human proof package</li>
+              <li>Verification report</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Standard</h3>
+            <div class="price">$5k <span>/ pilot</span></div>
+            <ul class="check-list">
+              <li>Up to three PRs or features</li>
+              <li>Trace artifacts</li>
+              <li>Risk assessment</li>
+              <li>Release recommendation</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Integration</h3>
+            <div class="price">$10k+ <span>/ workflow</span></div>
+            <ul class="check-list">
+              <li>GitHub workflow mapping</li>
+              <li>Proof templates</li>
+              <li>Reviewer decision flow</li>
+              <li>Next integration plan</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="container" id="cta">
+        <div class="cta-panel">
+          <div>
+            <h2>Have one AI-generated PR that needs proof?</h2>
+            <p>Run a small ProofTask pilot. Pick one PR or feature, define acceptance criteria, collect human proof, verify the decision, and produce a clear trace.</p>
+          </div>
+          <div class="hero-actions">
+            <a class="button primary" href="mailto:safal0645@gmail.com?subject=ProofTask%20pilot">Request pilot</a>
+            <a class="button" href="https://github.com/safal207/ProofTask">View GitHub</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="container">
+      ProofTask — structured proof, clear trace, confident merges.
+    </footer>
+  </div>
+</body>
+</html>
