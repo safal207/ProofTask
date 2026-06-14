@@ -44,6 +44,19 @@ A static landing page is available at [`site/index.html`](site/index.html).
 
 It can be opened locally or deployed with GitHub Pages, Vercel, Netlify, or any static hosting provider.
 
+### GitHub Pages deployment
+
+This repository includes a GitHub Pages workflow at [`.github/workflows/pages.yml`](.github/workflows/pages.yml).
+
+After merging to `main`, enable Pages deployment:
+
+1. Open repository **Settings**.
+2. Open **Pages**.
+3. Under **Build and deployment**, set **Source** to **GitHub Actions**.
+4. Run the `Deploy ProofTask landing page` workflow, or push a change to `site/` on `main`.
+
+The workflow publishes the `site/` folder.
+
 ## Install locally
 
 ProofTask can be run directly as a script or installed as a local CLI.
@@ -276,7 +289,7 @@ tests/        CLI regression tests
 schemas/      JSON schemas for tasks, proof, and trace records
 examples/     Example agent-created tasks, proof submissions, invalid fixtures, GitHub PR verification demo artifacts, and pilot report output
 docs/         MVP notes, positioning, demo walkthrough, ledger guide, market thesis, business model, pilot offer, outreach, first prospects, discovery script, pilot report template, GitHub workflow, demo PR flow, AI PR walkthrough, GTM outreach sprint, GitHub/X outreach playbook, MVP scope, and roadmap
-.github/      CI smoke test for the full verification flow
+.github/      CI smoke test and GitHub Pages deployment workflow
 ```
 
 ## Project status
