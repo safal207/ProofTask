@@ -259,6 +259,7 @@ See [`docs/roadmap.md`](docs/roadmap.md).
 - [`docs/demo-pr-flow.md`](docs/demo-pr-flow.md) — 3-minute demo scenario for showing an AI-generated PR verification loop.
 - [`docs/ai-pr-verification-walkthrough.md`](docs/ai-pr-verification-walkthrough.md) — hands-on walkthrough for demoing task, proof, trace, and PR comment generation.
 - [`docs/gtm-outreach-sprint.md`](docs/gtm-outreach-sprint.md) — 30-account outreach sprint plan, scoring, messages, follow-ups, and execution tracker.
+- [`docs/github-x-outreach-playbook.md`](docs/github-x-outreach-playbook.md) — GitHub and X channel playbook with safe outreach rules, posts, replies, DMs, and first actions.
 
 ## Repository structure
 
@@ -267,7 +268,7 @@ prooftask.py  Dependency-free MVP CLI
 tests/        CLI regression tests
 schemas/      JSON schemas for tasks, proof, and trace records
 examples/     Example agent-created tasks, proof submissions, invalid fixtures, GitHub PR verification demo artifacts, and pilot report output
-docs/         MVP notes, positioning, demo walkthrough, ledger guide, market thesis, business model, pilot offer, outreach, first prospects, discovery script, pilot report template, GitHub workflow, demo PR flow, AI PR walkthrough, GTM outreach sprint, MVP scope, and roadmap
+docs/         MVP notes, positioning, demo walkthrough, ledger guide, market thesis, business model, pilot offer, outreach, first prospects, discovery script, pilot report template, GitHub workflow, demo PR flow, AI PR walkthrough, GTM outreach sprint, GitHub/X outreach playbook, MVP scope, and roadmap
 .github/      CI smoke test for the full verification flow
 ```
 
