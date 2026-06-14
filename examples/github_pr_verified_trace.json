@@ -27,7 +27,7 @@
       "currency": "USD",
       "status": "pending"
     },
-    "status": "created",
+    "status": "verified",
     "trace": {
       "source": "github_pr",
       "repository": "demo/acme-saas",
