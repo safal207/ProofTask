@@ -228,6 +228,7 @@ See [`docs/roadmap.md`](docs/roadmap.md).
 - [`docs/market.md`](docs/market.md) — market thesis, target users, wedge, and expansion path.
 - [`docs/business-model.md`](docs/business-model.md) — pilot-led monetization, future SaaS pricing, and marketplace timing.
 - [`docs/pilot-offer.md`](docs/pilot-offer.md) — concrete paid pilot offer for early customer discovery and revenue.
+- [`docs/outreach.md`](docs/outreach.md) — outreach playbook, ICPs, prospecting channels, messages, follow-ups, and discovery questions.
 
 ## Repository structure
 
@@ -236,7 +237,7 @@ prooftask.py  Dependency-free MVP CLI
 tests/        CLI regression tests
 schemas/      JSON schemas for tasks, proof, and trace records
 examples/     Example agent-created tasks, proof submissions, and invalid fixtures
-docs/         MVP notes, positioning, demo walkthrough, ledger guide, market thesis, business model, pilot offer, and roadmap
+docs/         MVP notes, positioning, demo walkthrough, ledger guide, market thesis, business model, pilot offer, outreach, and roadmap
 .github/      CI smoke test for the full verification flow
 ```
 
