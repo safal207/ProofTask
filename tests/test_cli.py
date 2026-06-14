@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CLI = [sys.executable, str(ROOT / "prooftask.py")]
 TASK = ROOT / "examples" / "manual_qa_task.json"
 PROOF = ROOT / "examples" / "manual_qa_proof.json"
+GITHUB_PR_TRACE = ROOT / "examples" / "github_pr_verified_trace.json"
 INVALID_PROOF = ROOT / "examples" / "invalid_mismatched_proof.json"
 INVALID_TRACE = ROOT / "examples" / "invalid_final_trace.json"
 
@@ -282,6 +283,10 @@ def test_validate_examples() -> None:
     assert proof_result.returncode == 0, proof_result.stderr
     assert "OK proof" in proof_result.stdout
 
+    github_trace_result = run_cli("validate-trace", str(GITHUB_PR_TRACE))
+    assert github_trace_result.returncode == 0, github_trace_result.stderr
+    assert "trace_pr_124_demo" in github_trace_result.stdout
+
 
 def test_full_verification_flow(tmp_path: Path) -> None:
     submitted_trace = tmp_path / "submitted_trace.json"
@@ -324,6 +329,24 @@ def test_full_verification_flow(tmp_path: Path) -> None:
     assert trace["task"]["status"] == "verified"
     assert trace["verification"]["decision"] == "verified"
     assert len(trace["events"]) >= 3
+
+
+def test_render_pr_comment_from_trace(tmp_path: Path) -> None:
+    result = run_cli("render-pr-comment", "--trace", str(GITHUB_PR_TRACE))
+
+    assert result.returncode == 0, result.stderr
+    assert "## ProofTask result: verified" in result.stdout
+    assert "trace_pr_124_demo" in result.stdout
+    assert "#124 - Update signup flow" in result.stdout
+    assert "This PR can be considered for merge" in result.stdout
+
+    out = tmp_path / "comment.md"
+    out_result = run_cli("render-pr-comment", "--trace", str(GITHUB_PR_TRACE), "--out", str(out))
+
+    assert out_result.returncode == 0, out_result.stderr
+    assert "OK PR comment" in out_result.stdout
+    rendered = out.read_text(encoding="utf-8")
+    assert "ProofTask adds structured human proof" in rendered
 
 
 def test_rejects_mismatched_proof(tmp_path: Path) -> None:

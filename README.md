@@ -38,6 +38,25 @@ Trace is saved
 Payment can be released
 ```
 
+## Landing page
+
+A static landing page is available at [`site/index.html`](site/index.html).
+
+It can be opened locally or deployed with GitHub Pages, Vercel, Netlify, or any static hosting provider.
+
+### GitHub Pages deployment
+
+This repository includes a GitHub Pages workflow at [`.github/workflows/pages.yml`](.github/workflows/pages.yml).
+
+After merging to `main`, enable Pages deployment:
+
+1. Open repository **Settings**.
+2. Open **Pages**.
+3. Under **Build and deployment**, set **Source** to **GitHub Actions**.
+4. Run the `Deploy ProofTask landing page` workflow, or push a change to `site/` on `main`.
+
+The workflow publishes the `site/` folder.
+
 ## Install locally
 
 ProofTask can be run directly as a script or installed as a local CLI.
@@ -107,6 +126,26 @@ OK trace: trace_<id> task=task_001 status=verified
 
 For a full walkthrough, see [`docs/demo.md`](docs/demo.md).
 
+## GitHub PR verification demo artifacts
+
+ProofTask also includes demo artifacts for an AI-generated GitHub PR verification loop:
+
+- [`docs/ai-pr-verification-walkthrough.md`](docs/ai-pr-verification-walkthrough.md) — step-by-step walkthrough for demoing the full AI PR verification loop.
+- [`examples/github_pr_task.json`](examples/github_pr_task.json) — verification task for a demo PR.
+- [`examples/github_pr_proof.json`](examples/github_pr_proof.json) — human proof submission for the task.
+- [`examples/github_pr_verified_trace.json`](examples/github_pr_verified_trace.json) — verified trace connecting task, proof, decision, and events.
+- [`examples/github_pr_trace_summary.md`](examples/github_pr_trace_summary.md) — buyer-readable trace summary with decision, proof, timeline, and recommendation.
+- [`examples/github_pr_comment_verified.md`](examples/github_pr_comment_verified.md) — PR-ready verification comment.
+- [`examples/pilot_report_signup_flow.md`](examples/pilot_report_signup_flow.md) — client-facing pilot report for the verified signup flow PR.
+
+Render a PR-ready comment from a trace:
+
+```bash
+prooftask render-pr-comment \
+  --trace examples/github_pr_verified_trace.json \
+  --out examples/generated_github_pr_comment.md
+```
+
 ## Local ledger
 
 ProofTask can also keep tasks, proofs, and traces in a small local file-based ledger:
@@ -143,6 +182,7 @@ prooftask validate-proof       Validate a human proof JSON file
 prooftask submit-proof         Create a submitted trace from task + proof
 prooftask validate-trace       Validate a trace JSON file
 prooftask verify               Verify or reject a submitted trace
+prooftask render-pr-comment    Render a PR-ready markdown comment from a trace
 prooftask init-ledger          Initialize a local file-based ledger
 prooftask ledger-add-task      Add a task JSON file to a local ledger
 prooftask ledger-submit-proof  Submit proof and store proof + trace in a ledger
@@ -219,19 +259,37 @@ The first version focuses on one narrow use case:
 
 > AI coding agents can create QA microtasks, and human testers can submit proof of verification.
 
+See [`docs/mvp-scope.md`](docs/mvp-scope.md).
+
 ## Roadmap
 
 See [`docs/roadmap.md`](docs/roadmap.md).
+
+## Business and market
+
+- [`docs/market.md`](docs/market.md) — market thesis, target users, wedge, and expansion path.
+- [`docs/business-model.md`](docs/business-model.md) — pilot-led monetization, future SaaS pricing, and marketplace timing.
+- [`docs/pilot-offer.md`](docs/pilot-offer.md) — concrete paid pilot offer for early customer discovery and revenue.
+- [`docs/outreach.md`](docs/outreach.md) — outreach playbook, ICPs, prospecting channels, messages, follow-ups, and discovery questions.
+- [`docs/first-30-prospects.md`](docs/first-30-prospects.md) — first prospect archetypes, qualification scoring, and outreach batch plan.
+- [`docs/discovery-call-script.md`](docs/discovery-call-script.md) — 15-minute discovery call script, scoring, pilot close, and follow-up templates.
+- [`docs/pilot-report-template.md`](docs/pilot-report-template.md) — client-ready pilot report template with proof, findings, risks, recommendations, and next steps.
+- [`docs/github-workflow.md`](docs/github-workflow.md) — future GitHub PR verification workflow for AI-generated changes.
+- [`docs/demo-pr-flow.md`](docs/demo-pr-flow.md) — 3-minute demo scenario for showing an AI-generated PR verification loop.
+- [`docs/ai-pr-verification-walkthrough.md`](docs/ai-pr-verification-walkthrough.md) — hands-on walkthrough for demoing task, proof, trace, and PR comment generation.
+- [`docs/gtm-outreach-sprint.md`](docs/gtm-outreach-sprint.md) — 30-account outreach sprint plan, scoring, messages, follow-ups, and execution tracker.
+- [`docs/github-x-outreach-playbook.md`](docs/github-x-outreach-playbook.md) — GitHub and X channel playbook with safe outreach rules, posts, replies, DMs, and first actions.
 
 ## Repository structure
 
 ```text
 prooftask.py  Dependency-free MVP CLI
+site/         Static landing page for ProofTask
 tests/        CLI regression tests
 schemas/      JSON schemas for tasks, proof, and trace records
-examples/     Example agent-created tasks, proof submissions, and invalid fixtures
-docs/         MVP notes, positioning, demo walkthrough, ledger guide, and roadmap
-.github/      CI smoke test for the full verification flow
+examples/     Example agent-created tasks, proof submissions, invalid fixtures, GitHub PR verification demo artifacts, and pilot report output
+docs/         MVP notes, positioning, demo walkthrough, ledger guide, market thesis, business model, pilot offer, outreach, first prospects, discovery script, pilot report template, GitHub workflow, demo PR flow, AI PR walkthrough, GTM outreach sprint, GitHub/X outreach playbook, MVP scope, and roadmap
+.github/      CI smoke test and GitHub Pages deployment workflow
 ```
 
 ## Project status

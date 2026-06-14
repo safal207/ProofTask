@@ -1,0 +1,114 @@
+{
+  "trace_id": "trace_pr_124_demo",
+  "task_id": "github_pr_124_mobile_signup_check",
+  "status": "verified",
+  "created_at": "2026-06-14T10:05:00Z",
+  "updated_at": "2026-06-14T10:07:00Z",
+  "task": {
+    "task_id": "github_pr_124_mobile_signup_check",
+    "created_by": "github_pr_124",
+    "task_type": "manual_qa_check",
+    "objective": "Verify that the signup flow works on mobile Chrome after AI-generated changes.",
+    "acceptance_criteria": [
+      "Open the signup page on mobile Chrome",
+      "Enter valid test data",
+      "Submit the signup form",
+      "Confirm the success screen is shown",
+      "Confirm there is no obvious visual regression in the primary CTA"
+    ],
+    "proof_required": [
+      "screenshot of the success screen",
+      "short written report",
+      "pass/fail result",
+      "browser and device context"
+    ],
+    "payment": {
+      "amount": 5,
+      "currency": "USD",
+      "status": "pending"
+    },
+    "status": "verified",
+    "trace": {
+      "source": "github_pr",
+      "repository": "demo/acme-saas",
+      "pull_request_number": 124,
+      "pull_request_title": "Update signup flow",
+      "pull_request_url": "https://github.com/demo/acme-saas/pull/124",
+      "base_branch": "main",
+      "head_branch": "agent/signup-flow-update",
+      "head_sha": "demo-head-sha-124",
+      "author_type": "ai_coding_agent",
+      "ai_tool_or_agent": "agent_demo_001",
+      "labels": [
+        "ai-generated",
+        "prooftask:required"
+      ],
+      "changed_area": "signup flow",
+      "risk_area": "signup conversion and mobile UX",
+      "verification_gate": "pre_merge_human_qa",
+      "required_before": "merge",
+      "release_recommendation_target": "merge decision"
+    }
+  },
+  "proof": {
+    "proof_id": "proof_pr_124_mobile_signup",
+    "task_id": "github_pr_124_mobile_signup_check",
+    "submitted_by": "tester_demo_001",
+    "result": "pass",
+    "report": "Tested the AI-generated signup flow update on mobile Chrome. The signup page opened successfully, valid test data was submitted, and the success screen appeared. No obvious visual regression was observed in the primary CTA.",
+    "evidence": [
+      {
+        "type": "screenshot",
+        "uri": "artifact://screenshots/pr-124-mobile-signup-success.png",
+        "description": "Signup success screen on mobile Chrome after submitting valid test data."
+      },
+      {
+        "type": "text",
+        "uri": "artifact://reports/pr-124-mobile-signup-notes.txt",
+        "description": "Short written tester notes confirming acceptance criteria passed."
+      },
+      {
+        "type": "link",
+        "uri": "https://github.com/demo/acme-saas/pull/124",
+        "description": "Demo pull request being verified."
+      }
+    ],
+    "environment": {
+      "device": "Pixel 7 viewport / mobile browser simulation",
+      "os": "Android 14",
+      "browser": "Chrome Mobile"
+    },
+    "submitted_at": "2026-06-14T10:05:00Z"
+  },
+  "verification": {
+    "decision": "verified",
+    "verifier": "verifier_demo_001",
+    "reason": "All acceptance criteria passed. The submitted screenshot, written report, and environment details are sufficient to support a merge recommendation after normal code review and CI.",
+    "verified_at": "2026-06-14T10:07:00Z"
+  },
+  "events": [
+    {
+      "event_type": "task_created",
+      "status": "created",
+      "at": "2026-06-14T10:00:00Z",
+      "actor": "github_pr_124",
+      "reason": "AI-generated PR changed the signup flow and required human verification."
+    },
+    {
+      "event_type": "proof_submitted",
+      "status": "submitted",
+      "at": "2026-06-14T10:05:00Z",
+      "actor": "tester_demo_001",
+      "proof_id": "proof_pr_124_mobile_signup",
+      "result": "pass"
+    },
+    {
+      "event_type": "verification_decision",
+      "status": "verified",
+      "at": "2026-06-14T10:07:00Z",
+      "actor": "verifier_demo_001",
+      "proof_id": "proof_pr_124_mobile_signup",
+      "reason": "All acceptance criteria passed. PR can be considered for merge after normal code review and CI."
+    }
+  ]
+}
