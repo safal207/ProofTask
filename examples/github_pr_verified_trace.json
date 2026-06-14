@@ -34,12 +34,19 @@
       "pull_request_number": 124,
       "pull_request_title": "Update signup flow",
       "pull_request_url": "https://github.com/demo/acme-saas/pull/124",
+      "base_branch": "main",
+      "head_branch": "agent/signup-flow-update",
+      "head_sha": "demo-head-sha-124",
+      "author_type": "ai_coding_agent",
+      "ai_tool_or_agent": "agent_demo_001",
       "labels": [
         "ai-generated",
         "prooftask:required"
       ],
-      "ai_tool_or_agent": "agent_demo_001",
+      "changed_area": "signup flow",
       "risk_area": "signup conversion and mobile UX",
+      "verification_gate": "pre_merge_human_qa",
+      "required_before": "merge",
       "release_recommendation_target": "merge decision"
     }
   },
