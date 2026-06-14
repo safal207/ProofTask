@@ -219,6 +219,8 @@ The first version focuses on one narrow use case:
 
 > AI coding agents can create QA microtasks, and human testers can submit proof of verification.
 
+See [`docs/mvp-scope.md`](docs/mvp-scope.md).
+
 ## Roadmap
 
 See [`docs/roadmap.md`](docs/roadmap.md).
@@ -242,7 +244,7 @@ prooftask.py  Dependency-free MVP CLI
 tests/        CLI regression tests
 schemas/      JSON schemas for tasks, proof, and trace records
 examples/     Example agent-created tasks, proof submissions, and invalid fixtures
-docs/         MVP notes, positioning, demo walkthrough, ledger guide, market thesis, business model, pilot offer, outreach, first prospects, discovery script, pilot report template, GitHub workflow, demo PR flow, and roadmap
+docs/         MVP notes, positioning, demo walkthrough, ledger guide, market thesis, business model, pilot offer, outreach, first prospects, discovery script, pilot report template, GitHub workflow, demo PR flow, MVP scope, and roadmap
 .github/      CI smoke test for the full verification flow
 ```
 
