@@ -17,8 +17,17 @@ ProofTask created a human QA task to verify that the signup flow still works on 
 | --- | --- |
 | Repository | `demo/acme-saas` |
 | Pull request | `#124 - Update signup flow` |
-| Source | AI-generated change |
+| Pull request URL | `https://github.com/demo/acme-saas/pull/124` |
+| Base branch | `main` |
+| Head branch | `agent/signup-flow-update` |
+| Head SHA | `demo-head-sha-124` |
+| Author type | `ai_coding_agent` |
+| AI tool / agent | `agent_demo_001` |
+| Labels | `ai-generated`, `prooftask:required` |
+| Changed area | Signup flow |
 | Risk area | Signup conversion and mobile UX |
+| Verification gate | `pre_merge_human_qa` |
+| Required before | `merge` |
 | Verification target | Merge decision |
 
 ## Acceptance criteria
@@ -66,8 +75,9 @@ All acceptance criteria passed. The submitted screenshot, written report, and en
 
 This trace summary shows:
 
-- what was checked;
-- who checked it;
+- which PR was verified;
+- which branch and AI source created the change;
+- what risk area was checked;
 - what proof was submitted;
 - who verified the proof;
 - why the decision was made;
