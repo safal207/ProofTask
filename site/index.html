@@ -2,40 +2,39 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#050914" />
   <title>ProofTask — Human verification for AI-generated work</title>
   <meta name="description" content="ProofTask adds structured human proof to AI-generated software work before merge, release, or payment." />
   <style>
     :root {
       --bg: #050914;
-      --bg-soft: #081225;
       --card: rgba(12, 24, 48, 0.78);
       --card-strong: rgba(17, 34, 68, 0.92);
-      --line: rgba(101, 199, 255, 0.25);
       --line-strong: rgba(86, 205, 255, 0.66);
       --text: #f6fbff;
       --muted: #aab7cc;
-      --muted-2: #74839c;
+      --muted-2: #8391a8;
       --blue: #2d8cff;
       --cyan: #5be7ff;
       --green: #43e88d;
-      --danger: #ff6c7a;
       --shadow: 0 28px 90px rgba(0, 0, 0, 0.45);
       --radius: 28px;
       --radius-sm: 18px;
       --max: 1180px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     html {
       scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
     }
 
     body {
       margin: 0;
+      min-width: 320px;
+      overflow-x: hidden;
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       color: var(--text);
       background:
@@ -44,12 +43,22 @@
         radial-gradient(circle at 75% 80%, rgba(67, 232, 141, 0.08), transparent 28%),
         var(--bg);
       line-height: 1.55;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
     }
 
     a {
       color: inherit;
       text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
     }
+
+    a:focus-visible {
+      outline: 3px solid rgba(91, 231, 255, 0.8);
+      outline-offset: 4px;
+    }
+
+    section[id] { scroll-margin-top: 96px; }
 
     .page-shell {
       overflow: hidden;
@@ -65,6 +74,7 @@
         linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
       background-size: 64px 64px;
+      -webkit-mask-image: linear-gradient(to bottom, black, transparent 72%);
       mask-image: linear-gradient(to bottom, black, transparent 72%);
       pointer-events: none;
     }
@@ -76,11 +86,21 @@
       z-index: 1;
     }
 
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(5, 9, 20, 0.78);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(18px);
+    }
+
     .nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 26px 0;
+      min-height: 76px;
       gap: 24px;
     }
 
@@ -91,6 +111,7 @@
       font-weight: 800;
       font-size: 22px;
       letter-spacing: -0.03em;
+      white-space: nowrap;
     }
 
     .logo {
@@ -104,14 +125,8 @@
       box-shadow: 0 0 32px rgba(45, 140, 255, 0.28);
     }
 
-    .logo svg {
-      width: 23px;
-      height: 23px;
-    }
-
-    .brand span span {
-      color: var(--blue);
-    }
+    .logo svg { width: 23px; height: 23px; }
+    .brand span span { color: var(--blue); }
 
     .nav-links {
       display: flex;
@@ -121,23 +136,31 @@
       font-size: 14px;
     }
 
-    .nav-links a:hover {
-      color: var(--text);
+    .nav-links a {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
     }
 
+    .nav-links a:hover { color: var(--text); }
+
     .button {
+      min-height: 46px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
-      padding: 13px 18px;
+      padding: 12px 18px;
       border-radius: 999px;
       font-weight: 750;
       font-size: 14px;
+      line-height: 1.2;
+      text-align: center;
       border: 1px solid rgba(255, 255, 255, 0.12);
       background: rgba(255, 255, 255, 0.05);
       color: var(--text);
       transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+      touch-action: manipulation;
     }
 
     .button:hover {
@@ -145,6 +168,8 @@
       border-color: rgba(91, 231, 255, 0.45);
       background: rgba(91, 231, 255, 0.08);
     }
+
+    .button:active { transform: translateY(0) scale(0.98); }
 
     .button.primary {
       background: linear-gradient(135deg, var(--blue), var(--cyan));
@@ -220,6 +245,7 @@
     }
 
     .metric {
+      min-width: 0;
       padding: 16px;
       border: 1px solid rgba(255, 255, 255, 0.08);
       background: rgba(255, 255, 255, 0.035);
@@ -234,11 +260,14 @@
     }
 
     .metric span {
+      display: block;
       color: var(--muted-2);
       font-size: 13px;
+      overflow-wrap: anywhere;
     }
 
     .demo-card {
+      min-width: 0;
       background: linear-gradient(180deg, rgba(18, 37, 73, 0.92), rgba(5, 12, 28, 0.9));
       border: 1px solid rgba(91, 231, 255, 0.24);
       border-radius: var(--radius);
@@ -272,10 +301,7 @@
       z-index: 1;
     }
 
-    .dots {
-      display: flex;
-      gap: 7px;
-    }
+    .dots { display: flex; gap: 7px; flex: 0 0 auto; }
 
     .dots i {
       width: 9px;
@@ -292,8 +318,9 @@
     }
 
     .flow-item {
+      min-width: 0;
       display: grid;
-      grid-template-columns: 42px 1fr auto;
+      grid-template-columns: 42px minmax(0, 1fr) auto;
       gap: 14px;
       align-items: center;
       padding: 14px;
@@ -314,29 +341,28 @@
       border: 1px solid rgba(91, 231, 255, 0.3);
     }
 
-    .flow-item strong {
-      display: block;
-      font-size: 14px;
-    }
+    .flow-item > div:nth-child(2) { min-width: 0; }
+    .flow-item strong { display: block; font-size: 14px; }
 
     .flow-item span {
+      display: block;
       color: var(--muted-2);
       font-size: 12px;
+      overflow-wrap: anywhere;
     }
 
     .status {
       color: var(--green);
       font-weight: 800;
       font-size: 12px;
+      white-space: nowrap;
       background: rgba(67, 232, 141, 0.1);
       border: 1px solid rgba(67, 232, 141, 0.2);
       padding: 6px 9px;
       border-radius: 999px;
     }
 
-    section {
-      padding: 76px 0;
-    }
+    section { padding: 76px 0; }
 
     .section-head {
       max-width: 780px;
@@ -348,6 +374,7 @@
       font-size: clamp(34px, 4vw, 56px);
       line-height: 1;
       letter-spacing: -0.055em;
+      text-wrap: balance;
     }
 
     .section-head p {
@@ -363,6 +390,7 @@
     }
 
     .card {
+      min-width: 0;
       background: var(--card);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: var(--radius-sm);
@@ -376,14 +404,8 @@
       letter-spacing: -0.03em;
     }
 
-    .card p,
-    .card li {
-      color: var(--muted);
-    }
-
-    .card p {
-      margin: 0;
-    }
+    .card p, .card li { color: var(--muted); }
+    .card p { margin: 0; }
 
     .icon {
       width: 42px;
@@ -406,6 +428,7 @@
     }
 
     .step {
+      min-width: 0;
       min-height: 150px;
       position: relative;
       padding: 20px;
@@ -423,16 +446,11 @@
       color: var(--cyan);
       font-size: 26px;
       text-shadow: 0 0 18px rgba(91, 231, 255, 0.55);
+      z-index: 2;
     }
 
-    .step:last-child::after {
-      content: "";
-    }
-
-    .step small {
-      color: var(--cyan);
-      font-weight: 900;
-    }
+    .step:last-child::after { content: ""; }
+    .step small { color: var(--cyan); font-weight: 900; }
 
     .step strong {
       display: block;
@@ -440,10 +458,7 @@
       letter-spacing: -0.03em;
     }
 
-    .step span {
-      color: var(--muted-2);
-      font-size: 13px;
-    }
+    .step span { color: var(--muted-2); font-size: 13px; }
 
     .two-col {
       display: grid;
@@ -459,6 +474,8 @@
       display: grid;
       gap: 12px;
     }
+
+    .section-head .check-list { margin-top: 28px; }
 
     .check-list li {
       display: flex;
@@ -482,6 +499,8 @@
     }
 
     .code-card {
+      min-width: 0;
+      max-width: 100%;
       background: #030814;
       border: 1px solid rgba(91, 231, 255, 0.16);
       border-radius: 22px;
@@ -493,6 +512,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 16px;
       padding: 15px 18px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.08);
       color: var(--muted);
@@ -501,20 +521,18 @@
 
     pre {
       margin: 0;
+      max-width: 100%;
       padding: 20px;
       overflow-x: auto;
+      overscroll-behavior-inline: contain;
       color: #d7e7ff;
       font-size: 13px;
       line-height: 1.6;
+      -webkit-overflow-scrolling: touch;
     }
 
-    .green {
-      color: var(--green);
-    }
-
-    .blue {
-      color: var(--cyan);
-    }
+    .green { color: var(--green); }
+    .blue { color: var(--cyan); }
 
     .pricing {
       display: grid;
@@ -552,11 +570,14 @@
       box-shadow: var(--shadow);
     }
 
+    .cta-panel > div:first-child { min-width: 0; }
+
     .cta-panel h2 {
       margin: 0;
       font-size: clamp(32px, 4vw, 54px);
       letter-spacing: -0.055em;
       line-height: 1;
+      text-wrap: balance;
     }
 
     .cta-panel p {
@@ -565,66 +586,275 @@
       max-width: 650px;
     }
 
+    .cta-panel .hero-actions {
+      flex: 0 0 auto;
+      margin-top: 0;
+    }
+
     footer {
       padding: 40px 0 54px;
       color: var(--muted-2);
       font-size: 14px;
     }
 
+    .mobile-cta { display: none; }
+
     @media (max-width: 980px) {
-      .hero,
-      .two-col,
-      .cta-panel {
-        grid-template-columns: 1fr;
-      }
-
-      .hero {
-        padding-top: 34px;
-      }
-
-      .grid-3,
-      .pricing {
-        grid-template-columns: 1fr;
-      }
-
-      .proof-flow {
-        grid-template-columns: 1fr;
-      }
+      .hero, .two-col { grid-template-columns: 1fr; }
+      .hero { padding-top: 42px; gap: 38px; }
+      .grid-3, .pricing { grid-template-columns: 1fr; }
+      .proof-flow { grid-template-columns: 1fr; }
+      .step { min-height: 0; }
 
       .step::after {
         content: "↓";
         right: 22px;
         top: auto;
-        bottom: -22px;
+        bottom: -23px;
         transform: none;
       }
 
-      .hero-proof {
-        grid-template-columns: 1fr;
+      .nav-links { display: none; }
+
+      .cta-panel {
+        flex-direction: column;
+        align-items: flex-start;
       }
 
-      .nav-links {
-        display: none;
+      .cta-panel .hero-actions { width: 100%; }
+    }
+
+    @media (max-width: 640px) {
+      :root { --radius: 22px; --radius-sm: 16px; }
+
+      body { padding-bottom: calc(78px + env(safe-area-inset-bottom)); }
+      .container { width: min(100% - 28px, var(--max)); }
+      .nav { min-height: 64px; gap: 12px; }
+      .brand { gap: 9px; font-size: 19px; }
+      .logo { width: 34px; height: 34px; border-radius: 11px; }
+
+      .site-header .button {
+        min-height: 42px;
+        padding: 10px 14px;
+        font-size: 13px;
+      }
+
+      .desktop-only { display: none; }
+      .hero { padding: 34px 0 46px; gap: 30px; }
+
+      .eyebrow {
+        max-width: 100%;
+        margin-bottom: 18px;
+        padding: 7px 10px;
+        font-size: 12px;
+      }
+
+      h1 {
+        max-width: 100%;
+        font-size: clamp(39px, 12.4vw, 56px);
+        line-height: 0.98;
+        letter-spacing: -0.06em;
+      }
+
+      .hero-copy {
+        margin-top: 20px;
+        font-size: 17px;
+        line-height: 1.55;
+      }
+
+      .hero-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin-top: 26px;
+      }
+
+      .hero-actions .button {
+        width: 100%;
+        min-height: 50px;
+      }
+
+      .hero-proof {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 22px;
+      }
+
+      .metric {
+        padding: 12px 9px;
+        border-radius: 14px;
+      }
+
+      .metric strong { font-size: 13px; }
+
+      .metric span {
+        margin-top: 3px;
+        font-size: 10px;
+        line-height: 1.3;
+      }
+
+      .demo-card {
+        padding: 12px;
+        box-shadow: 0 20px 54px rgba(0, 0, 0, 0.4), 0 0 50px rgba(45, 140, 255, 0.14);
+      }
+
+      .browser-bar {
+        padding: 8px 6px 12px;
+        font-size: 11px;
+      }
+
+      .flow-stack { gap: 9px; }
+
+      .flow-item {
+        grid-template-columns: 34px minmax(0, 1fr);
+        gap: 10px;
+        padding: 11px;
+        border-radius: 15px;
+      }
+
+      .flow-number {
+        width: 32px;
+        height: 32px;
+        border-radius: 11px;
+        font-size: 13px;
+      }
+
+      .flow-item strong {
+        font-size: 13px;
+        line-height: 1.25;
+      }
+
+      .flow-item span {
+        margin-top: 2px;
+        font-size: 11px;
+        line-height: 1.35;
+      }
+
+      .status {
+        grid-column: 2;
+        justify-self: start;
+        padding: 4px 8px;
+        font-size: 10px;
+      }
+
+      section { padding: 52px 0; }
+      .section-head { margin-bottom: 24px; }
+
+      .section-head h2 {
+        font-size: clamp(32px, 10vw, 42px);
+        line-height: 1.04;
+        letter-spacing: -0.045em;
+      }
+
+      .section-head p {
+        margin-top: 14px;
+        font-size: 16px;
+      }
+
+      .grid-3, .pricing { gap: 12px; }
+      .card { padding: 20px; }
+      .icon { margin-bottom: 14px; }
+      .proof-flow { gap: 12px; margin-top: 22px; }
+
+      .step {
+        padding: 18px;
+        border-radius: 18px;
+      }
+
+      .step::after { right: 18px; bottom: -22px; }
+      .section-head .check-list { margin-top: 22px; }
+      .code-card { border-radius: 18px; }
+
+      .code-head {
+        padding: 13px 14px;
+        font-size: 12px;
+      }
+
+      pre {
+        padding: 16px;
+        font-size: 11px;
+        line-height: 1.55;
+      }
+
+      .price { font-size: 32px; }
+
+      .cta-panel {
+        padding: 24px 20px;
+        gap: 22px;
+      }
+
+      .cta-panel h2 {
+        font-size: clamp(31px, 9vw, 40px);
+        line-height: 1.04;
+      }
+
+      .cta-panel .hero-actions { display: grid; }
+
+      footer {
+        padding: 26px 0 34px;
+        text-align: center;
+        font-size: 12px;
+      }
+
+      .mobile-cta {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 50;
+        display: block;
+        padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+        background: rgba(5, 9, 20, 0.9);
+        border-top: 1px solid rgba(91, 231, 255, 0.2);
+        -webkit-backdrop-filter: blur(18px);
+        backdrop-filter: blur(18px);
+      }
+
+      .mobile-cta .button {
+        width: 100%;
+        min-height: 50px;
+      }
+    }
+
+    @media (max-width: 370px) {
+      .container { width: min(100% - 24px, var(--max)); }
+      h1 { font-size: 38px; }
+      .brand { font-size: 18px; }
+      .site-header .button { padding-inline: 12px; }
+      .metric { padding-inline: 7px; }
+      .metric strong { font-size: 12px; }
+      .metric span { font-size: 9px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
       }
     }
   </style>
 </head>
 <body>
   <div class="page-shell">
-    <header class="container nav">
-      <a class="brand" href="#top" aria-label="ProofTask home">
-        <span class="logo" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 21 8 12 13 3 8 12 3Z" stroke="currentColor" stroke-width="2.2"/><path d="M5 12.2 12 16l7-3.8" stroke="currentColor" stroke-width="2.2"/><path d="M5 16.2 12 20l7-3.8" stroke="currentColor" stroke-width="2.2"/></svg>
-        </span>
-        <span>Proof<span>Task</span></span>
-      </a>
-      <nav class="nav-links" aria-label="Main navigation">
-        <a href="#problem">Problem</a>
-        <a href="#flow">Flow</a>
-        <a href="#pilot">Pilot</a>
-        <a href="#cta">Contact</a>
-      </nav>
-      <a class="button" href="https://github.com/safal207/ProofTask">View GitHub</a>
+    <header class="site-header">
+      <div class="container nav">
+        <a class="brand" href="#top" aria-label="ProofTask home">
+          <span class="logo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 3 21 8 12 13 3 8 12 3Z" stroke="currentColor" stroke-width="2.2"/><path d="M5 12.2 12 16l7-3.8" stroke="currentColor" stroke-width="2.2"/><path d="M5 16.2 12 20l7-3.8" stroke="currentColor" stroke-width="2.2"/></svg>
+          </span>
+          <span>Proof<span>Task</span></span>
+        </a>
+        <nav class="nav-links" aria-label="Main navigation">
+          <a href="#problem">Problem</a>
+          <a href="#flow">Flow</a>
+          <a href="#pilot">Pilot</a>
+          <a href="#cta">Contact</a>
+        </nav>
+        <a class="button" href="https://github.com/safal207/ProofTask" target="_blank" rel="noopener noreferrer"><span class="desktop-only">View </span>GitHub</a>
+      </div>
     </header>
 
     <main id="top">
@@ -646,35 +876,15 @@
 
         <div class="demo-card" aria-label="ProofTask verification demo">
           <div class="browser-bar">
-            <span class="dots"><i></i><i></i><i></i></span>
+            <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
             <span>Proof trail / PR #124</span>
           </div>
           <div class="flow-stack">
-            <div class="flow-item">
-              <div class="flow-number">1</div>
-              <div><strong>AI-generated PR</strong><span>Signup flow changed by an agent</span></div>
-              <div class="status">Open</div>
-            </div>
-            <div class="flow-item">
-              <div class="flow-number">2</div>
-              <div><strong>Verification task</strong><span>Acceptance criteria and proof required</span></div>
-              <div class="status">Assigned</div>
-            </div>
-            <div class="flow-item">
-              <div class="flow-number">3</div>
-              <div><strong>Human proof</strong><span>Screenshot, report, browser context</span></div>
-              <div class="status">Submitted</div>
-            </div>
-            <div class="flow-item">
-              <div class="flow-number">4</div>
-              <div><strong>Verifier decision</strong><span>Accepted with reason and timestamp</span></div>
-              <div class="status">Verified</div>
-            </div>
-            <div class="flow-item">
-              <div class="flow-number">5</div>
-              <div><strong>PR-ready comment</strong><span>Maintainer sees the proof trail</span></div>
-              <div class="status">Ready</div>
-            </div>
+            <div class="flow-item"><div class="flow-number">1</div><div><strong>AI-generated PR</strong><span>Signup flow changed by an agent</span></div><div class="status">Open</div></div>
+            <div class="flow-item"><div class="flow-number">2</div><div><strong>Verification task</strong><span>Acceptance criteria and proof required</span></div><div class="status">Assigned</div></div>
+            <div class="flow-item"><div class="flow-number">3</div><div><strong>Human proof</strong><span>Screenshot, report, browser context</span></div><div class="status">Submitted</div></div>
+            <div class="flow-item"><div class="flow-number">4</div><div><strong>Verifier decision</strong><span>Accepted with reason and timestamp</span></div><div class="status">Verified</div></div>
+            <div class="flow-item"><div class="flow-number">5</div><div><strong>PR-ready comment</strong><span>Maintainer sees the proof trail</span></div><div class="status">Ready</div></div>
           </div>
         </div>
       </section>
@@ -685,21 +895,9 @@
           <p>AI coding agents create PRs, fixes, and features quickly. But merge confidence still needs human evidence: what was checked, who checked it, what proof exists, and why the work is safe to move forward.</p>
         </div>
         <div class="grid-3">
-          <div class="card">
-            <div class="icon">?</div>
-            <h3>Review uncertainty</h3>
-            <p>Teams struggle to know whether an AI-generated change was actually checked in a real browser, device, or workflow.</p>
-          </div>
-          <div class="card">
-            <div class="icon">↯</div>
-            <h3>Scattered proof</h3>
-            <p>Screenshots, QA notes, review comments, and release decisions get buried across chats, PRs, docs, and issue trackers.</p>
-          </div>
-          <div class="card">
-            <div class="icon">✓</div>
-            <h3>No clear trace</h3>
-            <p>When something breaks, teams need to know what was verified, what evidence existed, and who accepted the proof.</p>
-          </div>
+          <div class="card"><div class="icon">?</div><h3>Review uncertainty</h3><p>Teams struggle to know whether an AI-generated change was actually checked in a real browser, device, or workflow.</p></div>
+          <div class="card"><div class="icon">↯</div><h3>Scattered proof</h3><p>Screenshots, QA notes, review comments, and release decisions get buried across chats, PRs, docs, and issue trackers.</p></div>
+          <div class="card"><div class="icon">✓</div><h3>No clear trace</h3><p>When something breaks, teams need to know what was verified, what evidence existed, and who accepted the proof.</p></div>
         </div>
       </section>
 
@@ -723,11 +921,7 @@
             <h2>What the proof includes.</h2>
             <p>The output is not another vague “LGTM”. It is a structured artifact that supports merge, release, recheck, or rejection decisions.</p>
             <ul class="check-list">
-              <li>What was checked</li>
-              <li>Who checked it</li>
-              <li>What evidence exists</li>
-              <li>Who accepted or rejected it</li>
-              <li>Why it is safe to move forward</li>
+              <li>What was checked</li><li>Who checked it</li><li>What evidence exists</li><li>Who accepted or rejected it</li><li>Why it is safe to move forward</li>
             </ul>
           </div>
           <div class="code-card">
@@ -759,36 +953,9 @@ normal code review and CI pass.</code></pre>
           <p>ProofTask should begin as a paid, narrow proof audit for one real AI-generated PR or feature. Learn the buyer. Prove the value. Productize what repeats.</p>
         </div>
         <div class="pricing">
-          <div class="card">
-            <h3>Starter</h3>
-            <div class="price">$2.5k <span>/ pilot</span></div>
-            <ul class="check-list">
-              <li>One PR or feature</li>
-              <li>Acceptance criteria</li>
-              <li>Human proof package</li>
-              <li>Verification report</li>
-            </ul>
-          </div>
-          <div class="card">
-            <h3>Standard</h3>
-            <div class="price">$5k <span>/ pilot</span></div>
-            <ul class="check-list">
-              <li>Up to three PRs or features</li>
-              <li>Trace artifacts</li>
-              <li>Risk assessment</li>
-              <li>Release recommendation</li>
-            </ul>
-          </div>
-          <div class="card">
-            <h3>Integration</h3>
-            <div class="price">$10k+ <span>/ workflow</span></div>
-            <ul class="check-list">
-              <li>GitHub workflow mapping</li>
-              <li>Proof templates</li>
-              <li>Reviewer decision flow</li>
-              <li>Next integration plan</li>
-            </ul>
-          </div>
+          <div class="card"><h3>Starter</h3><div class="price">$2.5k <span>/ pilot</span></div><ul class="check-list"><li>One PR or feature</li><li>Acceptance criteria</li><li>Human proof package</li><li>Verification report</li></ul></div>
+          <div class="card"><h3>Standard</h3><div class="price">$5k <span>/ pilot</span></div><ul class="check-list"><li>Up to three PRs or features</li><li>Trace artifacts</li><li>Risk assessment</li><li>Release recommendation</li></ul></div>
+          <div class="card"><h3>Integration</h3><div class="price">$10k+ <span>/ workflow</span></div><ul class="check-list"><li>GitHub workflow mapping</li><li>Proof templates</li><li>Reviewer decision flow</li><li>Next integration plan</li></ul></div>
         </div>
       </section>
 
@@ -800,15 +967,17 @@ normal code review and CI pass.</code></pre>
           </div>
           <div class="hero-actions">
             <a class="button primary" href="mailto:safal0645@gmail.com?subject=ProofTask%20pilot">Request pilot</a>
-            <a class="button" href="https://github.com/safal207/ProofTask">View GitHub</a>
+            <a class="button" href="https://github.com/safal207/ProofTask" target="_blank" rel="noopener noreferrer">View GitHub</a>
           </div>
         </div>
       </section>
     </main>
 
-    <footer class="container">
-      ProofTask — structured proof, clear trace, confident merges.
-    </footer>
+    <footer class="container">ProofTask — structured proof, clear trace, confident merges.</footer>
+  </div>
+
+  <div class="mobile-cta" aria-label="Pilot call to action">
+    <a class="button primary" href="#cta">Run a ProofTask pilot</a>
   </div>
 </body>
 </html>
