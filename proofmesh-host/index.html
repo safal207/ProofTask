@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f3f6fb">
+<title>ProofMesh 0.2 — исследую и создаю</title>
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--ink:#0d1836;--muted:#65789b;--line:#d7e0f1;--blue:#0b4dff;--soft:#eaf1ff;--ok:#087a55;--okbg:#e9f8f1;--warn:#986200;--warnbg:#fff6df;--bad:#bd2e3d;--badbg:#fff0f2}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+button,input,textarea{font:inherit}button{cursor:pointer}.wrap{max-width:780px;margin:auto;padding:0 16px 72px}.top{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}.topin{max-width:780px;margin:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px}.brand{display:flex;align-items:center;gap:10px;font-size:26px;font-weight:800}.logo{width:37px;height:37px;border-radius:11px;background:var(--blue);display:grid;place-items:center;color:#fff}.logo svg{width:24px;height:24px}.meta{text-align:right;color:var(--muted);font-size:12px}.meta .warn{color:#986200;margin-top:3px}
+.kicker{letter-spacing:.18em;text-transform:uppercase;color:#607291;font-size:11px;font-weight:800;margin-top:26px}.hero h1{font-size:28px;line-height:1.1;margin:12px 0 6px}.hero p{color:var(--muted);font-size:15px;margin:0}.toolbar{display:grid;grid-template-columns:1fr;gap:8px;margin:18px 0}.toolbar.two{grid-template-columns:1fr 1fr}.btn{min-height:48px;border:1px solid var(--line);background:#fff;border-radius:14px;color:var(--ink);font-weight:700;padding:10px 14px}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}.btn.ghost{background:#fff}.btn.danger{color:var(--bad)}.btn.small{min-height:38px;border-radius:10px;font-size:13px}
+.mode{background:#fff;border:1px solid var(--line);border-radius:19px;padding:5px;display:grid;grid-template-columns:1fr 1fr;margin:18px 0;gap:4px}.mode button{border:0;background:transparent;border-radius:14px;padding:13px 10px;color:var(--ink);text-align:left;display:flex;gap:10px;align-items:center}.mode button.active{background:var(--soft);box-shadow:inset 0 0 0 1px #c7d7ff}.mode .ico{color:var(--blue);font-size:20px}.mode b{display:block;font-size:16px}.mode small{display:block;color:var(--muted);font-size:11px;margin-top:2px}
+.card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px;margin-top:18px}.card.edit{border-color:#9fbcff;border-top:5px solid var(--blue)}.row{display:flex;justify-content:space-between;gap:10px;align-items:center}.pill{display:inline-block;background:var(--soft);color:var(--blue);border-radius:7px;padding:4px 9px;font-weight:800;font-size:12px}.pm{font:12px ui-monospace,SFMono-Regular,Menlo,monospace}.title{font-size:32px;line-height:1.02;margin:18px 0 14px;letter-spacing:-.03em}.claim{font-size:16px;line-height:1.5;color:#34496f}.statusbox{border:1px solid var(--line);background:#f7f9fd;border-radius:16px;padding:14px;margin:18px 0}.statusline{font-weight:800;display:flex;align-items:center;gap:9px}.dot{width:11px;height:11px;border-radius:50%;border:2px solid currentColor}.statusbox p{color:var(--muted);margin:7px 0 0;font-size:13px}.statusbox.ok{background:var(--okbg);border-color:#bfe8d6;color:var(--ok)}.statusbox.warn{background:var(--warnbg);border-color:#f0d893;color:var(--warn)}.statusbox.bad{background:var(--badbg);border-color:#f0bac0;color:var(--bad)}.section{border-left:3px solid var(--blue);padding-left:14px;margin:22px 0}.section h3{margin:0 0 7px;font-size:14px}.section p{margin:0;color:var(--muted);font-size:13px}
+.tabs{display:flex;gap:7px;overflow:auto;padding-bottom:4px;margin-top:18px}.tabs button{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;color:var(--muted);font-weight:700}.tabs button.active{background:var(--blue);border-color:var(--blue);color:#fff}.panel{margin-top:12px}.material{border:1px solid var(--line);border-radius:14px;padding:13px;margin:9px 0}.material summary{font-weight:800;cursor:pointer}.material .kind{display:block;color:var(--muted);font-size:11px;margin-top:2px}.material pre{white-space:pre-wrap;background:#f7f9fc;border:1px solid #e4eaf4;border-radius:10px;padding:11px;font-size:12px;overflow:auto}.material input,.material textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:8px;color:var(--ink);background:#fff}.material textarea{min-height:130px;resize:vertical}
+.field{margin:16px 0}.field label{display:block;font-weight:800;margin-bottom:8px}.field input,.field textarea{width:100%;border:1px solid #b7c9ee;border-radius:12px;padding:12px;color:var(--ink);background:#fff}.field textarea{min-height:110px;resize:vertical}.hint{font-size:12px;color:var(--muted);margin-top:6px}.editbox{border:1px solid #bfd0f5;border-radius:18px;padding:16px}.editbox h2{font-size:23px;margin:4px 0}.subhead{color:var(--muted);margin:0 0 12px}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.actions .wide{grid-column:1/-1}.hidden{display:none!important}.notice{position:fixed;left:16px;right:16px;bottom:18px;max-width:748px;margin:auto;background:#0d1836;color:#fff;padding:12px 14px;border-radius:13px;box-shadow:0 14px 34px #0d183640;z-index:30;font-size:13px}.historyitem{border-bottom:1px solid var(--line);padding:12px 0}.historyitem:last-child{border:0}.historyitem b{display:block}.historyitem small{color:var(--muted)}.code{white-space:pre-wrap;background:#f7f9fc;border:1px solid var(--line);border-radius:12px;padding:12px;font:12px ui-monospace,SFMono-Regular,Menlo,monospace;overflow:auto}
+@media(min-width:700px){.toolbar{grid-template-columns:1fr 1fr}.hero h1{font-size:34px}.wrap{padding-bottom:90px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="topin"><div class="brand"><span class="logo"><svg viewBox="0 0 24 24" fill="none"><path d="M4 7l8-4 8 4-8 4-8-4Zm0 5 8 4 8-4M4 17l8 4 8-4" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>ProofMesh</div><div class="meta">Карточка 01 · локальный<br>модуль<div class="warn" id="saveMeta">Не сохранено · только память вкладки</div></div></div></header>
+<main class="wrap">
+<section class="hero">
+<div class="kicker" id="kicker">Режим исследователя</div>
+<h1 id="heroTitle">Исследую доказательства</h1>
+<p id="heroText">Разбирайся в выводе, материалах и границах проверки.</p>
+</section>
+<div class="toolbar" id="topTools">
+<button class="btn" id="exportBtn">↓ JSON-копия</button>
+<button class="btn hidden" id="restoreBtn">↑ Восстановить</button>
+<input id="restoreFile" type="file" accept="application/json" class="hidden">
+</div>
+<section class="mode">
+<button id="exploreMode" class="active"><span class="ico">⌕</span><span><b>Исследую</b><small>Чтение и перепроверка</small></span></button>
+<button id="createMode"><span class="ico">⊞</span><span><b>Создаю</b><small>Редактор и материалы</small></span></button>
+</section>
+
+<section id="exploreCard" class="card">
+<div class="row"><span class="pill">Чтение · учебный пример</span><span class="pm" id="versionTag">PM-001 / v1</span></div>
+<h2 class="title" id="readTitle"></h2>
+<p class="claim" id="readClaim"></p>
+<div id="statusBox" class="statusbox"><div class="statusline"><span class="dot"></span><span id="statusLabel"></span></div><p id="statusSummary"></p></div>
+<div class="section"><h3>Граница вывода</h3><p id="readBoundary"></p></div>
+<div class="tabs" id="tabsExplore">
+<button data-tab="materials" class="active">Материалы</button>
+<button data-tab="check">Проверка</button>
+<button data-tab="report">Отчёт</button>
+<button data-tab="history">История</button>
+</div>
+<div id="explorePanel" class="panel"></div>
+</section>
+
+<section id="createCard" class="card edit hidden">
+<div class="row"><span class="pill">Редактирование · текущая карточка</span><span class="pm" id="editVersionTag">PM-001 / v1</span></div>
+<h2 class="title" style="font-size:28px">Редактор карточки</h2>
+<p class="subhead">Начни с утверждения. Сохранённые правки создадут новую версию.</p>
+<div class="editbox">
+<h2>1. Утверждение и границы</h2><p class="subhead">Изменение создаёт новую версию. Проверка старой версии остаётся в истории.</p>
+<div class="field"><label>Название</label><input id="titleInput"></div>
+<div class="field"><label>Проверяемое утверждение</label><textarea id="claimInput"></textarea><div class="hint">После изменения прежний результат станет устаревшим.</div></div>
+<div class="field"><label>Граница вывода</label><textarea id="boundaryInput"></textarea></div>
+</div>
+<div class="tabs" id="tabsCreate">
+<button data-tab="materials" class="active">Материалы</button>
+<button data-tab="check">Проверка</button>
+<button data-tab="report">Отчёт</button>
+<button data-tab="history">История</button>
+</div>
+<div id="createPanel" class="panel"></div>
+<div class="actions">
+<button class="btn primary wide" id="saveBtn">Сохранить новую версию</button>
+<button class="btn" id="checkBtn">Проверить учебные трассы</button>
+<button class="btn" id="counterBtn">Добавить контрпример</button>
+<button class="btn" id="snapshotBtn">Файл для чтения</button>
+<button class="btn" id="discardBtn">Отменить правки</button>
+</div>
+</section>
+</main>
+<div id="notice" class="notice hidden"></div>
+<script>
+(function(){
+var KEY='proofmesh:v0.2-static';
+var uid=function(){return Math.random().toString(36).slice(2,10)};
+var iso=function(){return new Date().toISOString()};
+var defaults=function(){return{
+version:1,title:'Потеря ответа не разрешает повторное действие',
+claim:'В приложенных учебных трассах после потери ответа повторная отправка блокируется, пока исход первой попытки неизвестен.',
+boundary:'Только приложенные синтетические трассы одной операции INV-782. Проверка ограничена этой учебной моделью и не является проверкой реального банка, реальных переводов или общим аудитом безопасности.',
+materials:[
+{id:uid(),kind:'events',title:'Учебные трассы событий',content:'# Формат: имя: событие, событие, ...\nТрасса A: init, pending, confirmed, retry\nТрасса B: init, pending, failed, retry\nТрасса C: init, unknown, confirmed\nТрасса D: init, confirmed'},
+{id:uid(),kind:'note',title:'Как читать модель',content:'pending и unknown означают неоднозначный исход. confirmed и failed закрывают неоднозначность. retry до закрытия считается нарушением.'}
+],lastCheck:null,history:[]}};
+var state=load()||defaults(); var draft=clone(state); var mode='explore'; var tab='materials'; var noticeTimer;
+function clone(x){return JSON.parse(JSON.stringify(x))}
+function active(c){return c.materials.filter(function(m){return !m.deleted})}
+function load(){try{var r=localStorage.getItem(KEY);return r?JSON.parse(r):null}catch(e){return null}}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));document.getElementById('saveMeta').textContent='Сохранено · локально в браузере'}catch(e){document.getElementById('saveMeta').textContent='Хранилище браузера недоступно'}}
+function dirty(){return JSON.stringify({title:draft.title,claim:draft.claim,boundary:draft.boundary,materials:draft.materials})!==JSON.stringify({title:state.title,claim:state.claim,boundary:state.boundary,materials:state.materials})}
+function currentStatus(c){if(!active(c).some(function(m){return m.kind==='events'}))return'missing';if(!c.lastCheck)return'notrun';if((c.lastCheck.claimSnapshot||'').trim()!==c.claim.trim())return'stale';return c.lastCheck.status}
+var meta={notrun:['Проверка ещё не выполнена','Материалы приложены. Проверка этой карточки ещё не выполнена.',''],missing:['Не хватает материала','Нет активного материала с учебными трассами событий.','warn'],stale:['Результат устарел','Утверждение изменилось после последней проверки. Старый результат не переносится на новую версию.','warn'],verified:['Подтверждено в рамках модели','Все приложенные учебные трассы соответствуют правилу. Это ограниченный учебный результат, не общий аудит.','ok'],contradiction:['Обнаружено противоречие','В приложенных материалах найден контрпример: повтор произошёл до закрытия неоднозначного исхода.','bad']};
+function evaluate(text){var out=[];text.split('\n').forEach(function(line){line=line.trim();if(!line||line[0]==='#'||line.indexOf(':')<0)return;var p=line.split(':');var name=p.shift().trim();var ev=p.join(':').split(/[,\s]+/).filter(Boolean).map(function(x){return x.toLowerCase()});var amb=false,ok=true;ev.forEach(function(e){if(e==='pending'||e==='unknown')amb=true;else if(e==='confirmed'||e==='failed')amb=false;else if(e==='retry'&&amb)ok=false});out.push({name:name,ok:ok})});return out}
+function runCheck(c){var events=active(c).filter(function(m){return m.kind==='events'});if(!events.length)return{at:iso(),claimSnapshot:c.claim,status:'missing',traces:[],summary:meta.missing[1]};var mats=active(c).filter(function(m){return m.kind==='events'||m.kind==='counter'});var traces=[];mats.forEach(function(m){evaluate(m.content).forEach(function(t){t.material=m.title;traces.push(t)})});var bad=traces.filter(function(t){return !t.ok});return{at:iso(),claimSnapshot:c.claim,status:bad.length?'contradiction':'verified',traces:traces,summary:bad.length?('Найдено нарушений: '+bad.length+'.'):('Все учебные трассы ('+traces.length+') соответствуют правилу.')}} 
+function show(msg){var n=document.getElementById('notice');n.textContent=msg;n.classList.remove('hidden');clearTimeout(noticeTimer);noticeTimer=setTimeout(function(){n.classList.add('hidden')},3200)}
+function renderHeader(){document.getElementById('kicker').textContent=mode==='explore'?'Режим исследователя':'Мастерская автора';document.getElementById('heroTitle').textContent=mode==='explore'?'Исследую доказательства':'Создаю исследование';document.getElementById('heroText').textContent=mode==='explore'?'Разбирайся в выводе, материалах и границах проверки.':'Редактируй карточку. Добавляй основания. Проверяй результат.';document.getElementById('restoreBtn').classList.toggle('hidden',mode!=='create');document.getElementById('topTools').classList.toggle('two',mode==='create');document.getElementById('exploreMode').classList.toggle('active',mode==='explore');document.getElementById('createMode').classList.toggle('active',mode==='create');document.getElementById('exploreCard').classList.toggle('hidden',mode!=='explore');document.getElementById('createCard').classList.toggle('hidden',mode!=='create')}
+function kind(k){return k==='events'?'Трассы событий':k==='counter'?'Контрпример':'Заметка'}
+function materialsHtml(c,edit){var a=active(c);var h='';if(edit)h+='<div class="toolbar two"><button class="btn small" data-add="events">+ Трассы</button><button class="btn small" data-add="note">+ Заметка</button></div>';if(!a.length)h+='<p class="hint">Материалов нет.</p>';a.forEach(function(m){h+='<details class="material"><summary>'+esc(m.title)+'<span class="kind">'+kind(m.kind)+'</span></summary>';if(edit){h+='<input data-title="'+m.id+'" value="'+attr(m.title)+'"><textarea data-content="'+m.id+'">'+esc(m.content)+'</textarea><button class="btn small danger" data-del="'+m.id+'">Удалить материал</button>'}else h+='<pre>'+esc(m.content)+'</pre>';h+='</details>'});return h}
+function checkHtml(c){var s=currentStatus(c),m=meta[s],h='<div class="statusbox '+m[2]+'"><div class="statusline"><span class="dot"></span>'+m[0]+'</div><p>'+m[1]+'</p></div>';if(c.lastCheck&&c.lastCheck.traces){h+='<div class="code">'+c.lastCheck.traces.map(function(t){return(t.ok?'PASS ':'FAIL ')+t.name+' — '+t.material}).join('\n')+'</div>'}return h}
+function reportHtml(c){return'<div class="code"># '+esc(c.title)+'\n\nУтверждение\n'+esc(c.claim)+'\n\nГраница вывода\n'+esc(c.boundary)+'\n\nРезультат\n'+meta[currentStatus(c)][0]+'\n\n'+(c.lastCheck?esc(c.lastCheck.summary):'Проверка ещё не запускалась.')+'</div>'}
+function historyHtml(c,edit){if(!c.history.length)return'<p class="hint">История появится после первого сохранения.</p>';return c.history.map(function(v,i){return'<div class="historyitem"><b>v'+v.version+' · '+esc(v.label)+'</b><small>'+new Date(v.at).toLocaleString('ru-RU')+'</small>'+(edit?'<div><button class="btn small" data-restorever="'+i+'">Восстановить эту версию</button></div>':'')+'</div>'}).join('')}
+function panelHtml(c,edit){if(tab==='materials')return materialsHtml(c,edit);if(tab==='check')return checkHtml(c);if(tab==='report')return reportHtml(c);return historyHtml(c,edit)}
+function wirePanel(edit){var root=document.getElementById(edit?'createPanel':'explorePanel');root.querySelectorAll('[data-add]').forEach(function(b){b.onclick=function(){var k=b.getAttribute('data-add');draft.materials.push({id:uid(),kind:k,title:k==='events'?'Новые учебные трассы':'Новая заметка',content:k==='events'?'Трасса N: init, pending, confirmed, retry':'Синтетическая заметка.'});render()}});root.querySelectorAll('[data-title]').forEach(function(i){i.oninput=function(){var id=i.getAttribute('data-title');draft.materials.find(function(m){return m.id===id}).title=i.value}});root.querySelectorAll('[data-content]').forEach(function(i){i.oninput=function(){var id=i.getAttribute('data-content');draft.materials.find(function(m){return m.id===id}).content=i.value}});root.querySelectorAll('[data-del]').forEach(function(b){b.onclick=function(){var id=b.getAttribute('data-del');draft.materials.find(function(m){return m.id===id}).deleted=true;render()}});root.querySelectorAll('[data-restorever]').forEach(function(b){b.onclick=function(){var v=state.history[+b.getAttribute('data-restorever')];draft=clone(v.card);draft.history=clone(state.history);renderInputs();render();show('Версия загружена в редактор. Сохраните её как новую версию.')}})}
+function render(){renderHeader();var read=state;document.getElementById('readTitle').textContent=read.title;document.getElementById('readClaim').textContent=read.claim;document.getElementById('readBoundary').textContent=read.boundary;document.getElementById('versionTag').textContent='PM-001 / v'+read.version;document.getElementById('editVersionTag').textContent='PM-001 / v'+draft.version;var s=currentStatus(read),m=meta[s],sb=document.getElementById('statusBox');sb.className='statusbox '+m[2];document.getElementById('statusLabel').textContent=m[0];document.getElementById('statusSummary').textContent=read.lastCheck?read.lastCheck.summary:m[1];document.getElementById('explorePanel').innerHTML=panelHtml(state,false);document.getElementById('createPanel').innerHTML=panelHtml(draft,true);wirePanel(true);document.querySelectorAll('.tabs button').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-tab')===tab)});document.getElementById('saveMeta').textContent=dirty()?'Не сохранено · только память вкладки':'Сохранено · локально в браузере'}
+function renderInputs(){document.getElementById('titleInput').value=draft.title;document.getElementById('claimInput').value=draft.claim;document.getElementById('boundaryInput').value=draft.boundary}
+function saveVersion(label){var old={version:state.version,title:state.title,claim:state.claim,boundary:state.boundary,materials:clone(state.materials),lastCheck:clone(state.lastCheck)};var hist=clone(state.history||[]);hist.unshift({version:state.version,at:iso(),label:label,card:old});state=clone(draft);state.version=(old.version||1)+1;state.history=hist.slice(0,30);draft=clone(state);persist();renderInputs();render()}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function attr(s){return esc(s).replace(/"/g,'&quot;')}
+function download(name,text,type){var a=document.createElement('a'),u=URL.createObjectURL(new Blob([text],{type:type}));a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},500)}
+function publicHtml(include){var s=currentStatus(state),materials=include?active(state):[];var mh=materials.map(function(m){return'<h3>'+esc(m.title)+'</h3><pre>'+esc(m.content)+'</pre>'}).join('');return'<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(state.title)+' — ProofMesh</title><style>body{background:#f3f6fb;color:#0d1836;font:16px/1.55 system-ui;margin:0}main{max-width:760px;margin:auto;padding:30px 18px}.c{background:#fff;border:1px solid #d7e0f1;border-radius:22px;padding:24px}pre{white-space:pre-wrap;background:#f7f9fc;padding:12px;border-radius:12px}</style><main><div class="c"><small>ProofMesh · снимок только для чтения</small><h1>'+esc(state.title)+'</h1><b>'+esc(meta[s][0])+'</b><h2>Утверждение</h2><p>'+esc(state.claim)+'</p><h2>Граница вывода</h2><p>'+esc(state.boundary)+'</p><h2>Результат</h2><p>'+esc(state.lastCheck?state.lastCheck.summary:meta[s][1])+'</p>'+(include?'<h2>Материалы</h2>'+mh:'<p><small>Материалы не включены в снимок.</small></p>')+'<hr><small>Синтетическая учебная модель. Не проверка реального банка и не реальные переводы.</small></div></main></html>'}
+document.getElementById('exploreMode').onclick=function(){if(dirty()&&!confirm('Есть несохранённые правки. Перейти без их сохранения?'))return;mode='explore';render()}
+document.getElementById('createMode').onclick=function(){mode='create';draft=clone(state);renderInputs();render()}
+document.querySelectorAll('.tabs').forEach(function(t){t.onclick=function(e){var b=e.target.closest('button[data-tab]');if(!b)return;tab=b.getAttribute('data-tab');render()}})
+document.getElementById('titleInput').oninput=function(e){draft.title=e.target.value;render()}
+document.getElementById('claimInput').oninput=function(e){draft.claim=e.target.value;render()}
+document.getElementById('boundaryInput').oninput=function(e){draft.boundary=e.target.value;render()}
+document.getElementById('saveBtn').onclick=function(){if(!dirty()){show('Изменений нет.');return}saveVersion('Ручное сохранение правок');show('Новая версия сохранена.')}
+document.getElementById('discardBtn').onclick=function(){draft=clone(state);renderInputs();render();show('Несохранённые правки отменены.')}
+document.getElementById('checkBtn').onclick=function(){if(dirty())saveVersion('Автосохранение перед проверкой');state.lastCheck=runCheck(state);draft=clone(state);persist();tab='check';renderInputs();render();show('Учебная проверка завершена: '+meta[currentStatus(state)][0]+'.')}
+document.getElementById('counterBtn').onclick=function(){draft.materials.push({id:uid(),kind:'counter',title:'Контрпример: повтор в неоднозначном окне',content:'Трасса X: init, pending, retry, confirmed'});tab='materials';render();show('Контрпример добавлен. Запустите проверку.')}
+document.getElementById('exportBtn').onclick=function(){download('proofmesh-card-v0.2.json',JSON.stringify(state,null,2),'application/json')}
+document.getElementById('restoreBtn').onclick=function(){document.getElementById('restoreFile').click()}
+document.getElementById('restoreFile').onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){try{var x=JSON.parse(r.result);if(!x.title||!x.materials)throw 0;state=x;state.history=state.history||[];draft=clone(state);persist();renderInputs();render();show('Карточка восстановлена.')}catch(err){show('Не удалось прочитать JSON-копию.')}};r.readAsText(f);e.target.value=''}
+document.getElementById('snapshotBtn').onclick=function(){var include=confirm('Включить активные материалы в отдельный файл для чтения?\nOK — включить. Отмена — создать снимок без материалов.');download('proofmesh-readonly.html',publicHtml(include),'text/html');show('Файл для чтения подготовлен.')}
+window.addEventListener('beforeunload',function(e){if(dirty()){e.preventDefault();e.returnValue=''}})
+persist();renderInputs();render();
+})();
+</script>
+</body></html>
